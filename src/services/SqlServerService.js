@@ -7,17 +7,17 @@ const TYPES = require('tedious').TYPES;
 const connectToServer = () => {
    return new Promise((resolve, reject) => {
        const config = {
-           server: process.env.DB_SERVER,
+           server: 'LORDBAYTON',
            authentication: {
-               type: process.env.DB_AUTHTYPE,
+               type: 'default',
                options: {
-                   userName: process.env.DB_USERNAME,
-                   password: process.env.DB_PASSWORD
+                   userName: 'sa',
+                   password: 'admin123'
                }
            },
            options: {
-               port: parseInt(process.env.DB_PORT),
-               database: process.env.DB_DBNAME,
+               port: 1433,
+               database: 'pvMarket',
                encrypt: false,
                trustServerCertificate: false,
                rowCollectionOnDone: true

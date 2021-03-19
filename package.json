@@ -37,7 +37,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ebuild": "npm run build && node_modules/.bin/build"
+    "ebuild": "npm run build && node_modules/.bin/build",
+    "packagewin32": "electron-packager . --platform=win32 --arch=x64"
   },
   "eslintConfig": {
     "extends": [

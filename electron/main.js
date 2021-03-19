@@ -20,31 +20,9 @@ function createWindow() {
     })
     console.log(path.join(__dirname,'preload.js'))
     console.log(isDev)
-    /*let startURL
-
-    if (isDev) {
-    startURL = url.format({
-        protocol: 'http:',
-        host: 'localhost:3000',
-        pathname: '/',
-        slashes: true
-    })
-    win.webContents.openDevTools()
-    } else {
-    startURL = url.format({
-        protocol: 'file:',
-        pathname: path.join(__dirname, '../build/index.html'),
-        slashes: true
-    })
-    }*/
     const startURL = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
  
     win.loadURL(startURL);
- 
-    // mainWindow.once('ready-to-show', () => mainWindow.show());
-    // mainWindow.on('closed', () => {
-    //     mainWindow = null;
-    // });
 }
 app.whenReady().then(() => {
     createWindow()
