@@ -6,7 +6,6 @@ const url = require('url')
 require('dotenv').config()
 
 function createWindow() {
-    console.log('.buenas')
     const win = new BrowserWindow({
         width: 1280,
         height: 720,
@@ -18,8 +17,6 @@ function createWindow() {
             preload: path.join(__dirname,'preload.js'),
         }
     })
-    console.log(path.join(__dirname,'preload.js'))
-    console.log(isDev)
     const startURL = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
  
     win.loadURL(startURL);

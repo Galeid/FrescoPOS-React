@@ -74,21 +74,21 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             StockProduct: { value: productDB.stockProduct },
             PriceProduct: { value: productDB.priceProduct },
             DateProduct: { value: registro },
-            DescriptionProduct: { value: productDB.descriptionProduct == '' ? 'No hay notas' : productDB.descriptionProduct },
+            DescriptionProduct: { value: productDB.descriptionProduct === '' ? 'No hay notas' : productDB.descriptionProduct },
             StateProduct: { value: productDB.stateProduct },
             spName: 'spInsertProduct'
         }
 
-        if (productDB.nameProduct != '' && productDB.priceProduct != '' && productDB.stateProduct != '') {
+        if (productDB.nameProduct !== '' && productDB.priceProduct !== '' && productDB.stateProduct !== '') {
             console.log('Hola1')
             ipcRenderer.invoke('insertproduct', prepareData)
                 .then(() => {
                     Alert('success', 'Se agrego el producto con exito')
                     history.push('/products')
-                }).catch((err: any) => (
-                    console.log(err),
+                }).catch((err: any) => {
+                    console.log(err)
                     Alert('error', 'Ha ocurrido un error')
-                ))
+                })
         } else {
             console.log('Hola2')
             Alert('error', 'Debe llenar los campos primero')
@@ -136,11 +136,12 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         } else {
             console.log('sin id: ', props)
         }
+        // eslint-disable-next-line
     }, [])
 
     const handleChange = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
-        if (event.target.name == "barcodeProduct" || event.target.name == "stockProduct" || event.target.name == "priceProduct") {
-            if (event.target.name == "priceProduct") {
+        if (event.target.name === "barcodeProduct" || event.target.name === "stockProduct" || event.target.name === "priceProduct") {
+            if (event.target.name === "priceProduct") {
                 setProductDB({
                     ...productDB,
                     [event.target.name]: event.target.value as string
@@ -260,10 +261,10 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                     input={<Input name="stateProduct" />}
                                 >
                                     <MenuItem selected value={productDB.stateProduct}>
-                                        <em>{productDB.stateProduct == '1' ? 'Activo' : 'Inactivo'}</em>
+                                        <em>{productDB.stateProduct === '1' ? 'Activo' : 'Inactivo'}</em>
                                     </MenuItem>
                                     {
-                                        productDB.stateProduct == '1' ?
+                                        productDB.stateProduct === '1' ?
                                             <MenuItem value='0'>Inactivo</MenuItem>
                                             :
                                             <MenuItem value='1'>Activo</MenuItem>

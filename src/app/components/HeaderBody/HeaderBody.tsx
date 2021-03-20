@@ -56,7 +56,7 @@ const HeaderBody = () => {
             }
             <IconButton color="inherit"
                 aria-controls="fade-menu" aria-haspopup="true" onClick={handleClick} >
-                <img src="https://img.icons8.com/bubbles/2x/login-rounded-right.png" width="40px" height="40px" className={classes.imagen} />
+                <img src="https://img.icons8.com/bubbles/2x/login-rounded-right.png" width="40px" height="40px" className={classes.imagen} alt={''}/>
             </IconButton>
             <Menu
                 id="simple-menu"

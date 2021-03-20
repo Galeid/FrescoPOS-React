@@ -39,7 +39,7 @@ const fillDecimals = (number: number) => {
    }
    let str = number+'';
    let dot = str.lastIndexOf('.');
-   let isDecimal = dot != -1;
+   let isDecimal = dot !== -1;
    let integer = isDecimal ? str.substr(0, dot) : str;
    let decimals = isDecimal ? str.substr(dot+1)  : '';
    decimals = pad(decimals, 2, 0);
@@ -84,10 +84,11 @@ const SalePage = () => {
       if (searchValue.length >= 3) {
          searchProducts(searchValue)
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [searchValue])
 
    useEffect(() => {
-      if (saleProducts.length == saleData.length) {
+      if (saleProducts.length === saleData.length) {
          return
       }
       if (saleProducts.length > 0) {
@@ -101,6 +102,7 @@ const SalePage = () => {
          let aux = [...saleData, newData]
          setSaleData(aux)
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [saleProducts])
 
    useEffect(() => {
@@ -113,18 +115,22 @@ const SalePage = () => {
 
    useEffect(() => {
       updateTotalIgv()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [subTotal])
 
    useEffect(() => {
       updateChange()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [total])
 
    useEffect(() => {
       updateTotalIgv()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [saleVoucher])
    
    useEffect(() => {
       updateChange()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [cashPayment])
 
    const inputChangeSearch = (event: any, value: any, reason: any) => {
@@ -139,7 +145,7 @@ const SalePage = () => {
       let newSaleData = saleData.slice()
       let data = newSaleData[index]
 
-      if (event.target.value != '') {
+      if (event.target.value !== '') {
          if (event.target.value > data.stockProduct) {
             event.target.value = data.stockProduct
          } else if (event.target.value < 1) {
@@ -155,7 +161,7 @@ const SalePage = () => {
    }
 
    const onKeyDSField = (event: any) => {
-      if (event.keyCode == 13 && searchOptions.length == 0) {
+      if (event.keyCode === 13 && searchOptions.length === 0) {
          addSaleProduct()
       }
    }
@@ -184,7 +190,7 @@ const SalePage = () => {
    const updateTotalIgv = () => {
       let igvCalc = 0
       let subTotalNum = Number(subTotal)
-      if (saleVoucher == 'factura') {
+      if (saleVoucher === 'factura') {
          igvCalc = round2Decimals(subTotalNum * 0.18)
          setIgv(fillDecimals(igvCalc))
       } else {
@@ -233,7 +239,7 @@ const SalePage = () => {
    }
 
    const searchProducts = (value: any) => {
-      if (searchReason == 'reset') {
+      if (searchReason === 'reset') {
          setSearchOptions([])
          return
       }
@@ -254,7 +260,7 @@ const SalePage = () => {
             }
          })
    }
-
+   
    const addSaleProduct = () => {
       const prepareData = {
          Entry: {
@@ -268,9 +274,9 @@ const SalePage = () => {
                if (products[0].stateProduct) {
                   let exist = -1
                   for (let i = 0; i < saleProducts.length; i++) {
-                     if (saleProducts[i].idProduct == products[0].idProduct) exist = i
+                     if (saleProducts[i].idProduct === products[0].idProduct) exist = i
                   }
-                  if (exist == -1) {
+                  if (exist === -1) {
                      let aux = [...saleProducts, products[0]]
                      setSaleProducts(aux)
                   } else {
@@ -293,7 +299,7 @@ const SalePage = () => {
          qproductval += saleData[i].quantityProduct
       }
       let changeval = Number(change)
-      if (qproductval == 0) {
+      if (qproductval === 0) {
          console.log('createSale(): No hay productos para realizar la venta.')
          return
       }
@@ -306,7 +312,7 @@ const SalePage = () => {
          return
       }
       let nameclientval = clientName
-      if (nameclientval == '') {
+      if (nameclientval === '') {
          nameclientval = 'Varios'
       }
       let dateval: Date = new Date();

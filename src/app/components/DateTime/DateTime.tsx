@@ -9,6 +9,21 @@ const DateTime = () => {
    const [dayDate, setDayDate] = useState('')
 
    useEffect(() => {
+      const updateTime = () => {
+         let currentDate = new Date()
+         let currentSeconds = currentDate.getSeconds() + ''
+         let currentMinutes = currentDate.getMinutes() + ''
+         let currentHours = currentDate.getHours() + ''
+   
+         if (Number(currentSeconds) === 0 && Number(currentMinutes) === 0 && Number(currentHours) === 0) updateDate()
+   
+         if (Number(currentSeconds) < 10) currentSeconds = '0' + currentSeconds
+         if (Number(currentMinutes) < 10) currentMinutes = '0' + currentMinutes
+         if (Number(currentHours) < 10) currentHours = '0' + currentHours
+   
+         setDayTime(currentHours + ':' + currentMinutes + ':' + currentSeconds)
+      }
+
       updateDate()
       updateTime()
 
@@ -32,21 +47,6 @@ const DateTime = () => {
       }
    });
    const classes = useStyles();
-
-   const updateTime = () => {
-      let currentDate = new Date()
-      let currentSeconds = currentDate.getSeconds() + ''
-      let currentMinutes = currentDate.getMinutes() + ''
-      let currentHours = currentDate.getHours() + ''
-
-      if (Number(currentSeconds) == 0 && Number(currentMinutes) == 0 && Number(currentHours) == 0) updateDate()
-
-      if (Number(currentSeconds) < 10) currentSeconds = '0' + currentSeconds
-      if (Number(currentMinutes) < 10) currentMinutes = '0' + currentMinutes
-      if (Number(currentHours) < 10) currentHours = '0' + currentHours
-
-      setDayTime(currentHours + ':' + currentMinutes + ':' + currentSeconds)
-   }
 
    const updateDate = () => {
       let currentDate = new Date()

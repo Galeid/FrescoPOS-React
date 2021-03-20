@@ -77,23 +77,6 @@ const ProductList = () => {
             })
     }
 
-    const getSearchProduct = () => {
-        const prepareData = {
-            Entry: {
-                value: input
-            },
-            spName: 'spSearchProducts'
-        }
-        ipcRenderer.invoke('searchproducts', prepareData).
-            then((products: any) => {
-                setProductDB(products)
-                if (productsFromDB.length > 0) {
-                    console.log("1. productsFromDB: ", productsFromDB)
-                    showProducts(true)
-                }
-            })
-    }
-
     const deleteProduct = (id: string) => {
         const prepareData = {
             Entry: {
@@ -126,6 +109,22 @@ const ProductList = () => {
 
     //Cambiar que solo se renderiza una vez
     useEffect(() => {
+        const getSearchProduct = () => {
+            const prepareData = {
+                Entry: {
+                    value: input
+                },
+                spName: 'spSearchProducts'
+            }
+            ipcRenderer.invoke('searchproducts', prepareData)
+                .then((products: any) => {
+                    setProductDB(products)
+                    if (productsFromDB.length > 0) {
+                        console.log("1. productsFromDB: ", productsFromDB)
+                        showProducts(true)
+                    }
+                })
+        }
         //console.log(productDB)
         //console.log(user)
         if (input.length > 0) {
@@ -167,7 +166,7 @@ const ProductList = () => {
 
                             {
                                 (user != null) ?
-                                    (user.nameUser == 'admin') ?
+                                    (user.nameUser === 'admin') ?
                                         <Button
                                             variant="contained"
                                             color="primary"
@@ -202,7 +201,7 @@ const ProductList = () => {
                                     <TableCell align="center">Estado</TableCell>
                                     {
                                         (user != null) ?
-                                            (user.nameUser == 'admin') ?
+                                            (user.nameUser === 'admin') ?
                                                 <TableCell align="center">Detalles</TableCell>
                                                 :
                                                 false
@@ -247,7 +246,7 @@ const ProductList = () => {
                                         </TableCell>
                                         {
                                             (user != null) ?
-                                                (user.nameUser == 'admin') ?
+                                                (user.nameUser === 'admin') ?
                                                     <TableCell align="center">
                                                         <Grid container spacing={3}>
                                                             <Grid
