@@ -93,6 +93,7 @@ const ProductList = () => {
             .then(() => {
                 Alert('info', 'Se elimino correctamente')
                 getProducts()
+                setPage(0)
             })
     }
 
@@ -113,6 +114,7 @@ const ProductList = () => {
     }
 
     const handleChangePage = (e : any, newPage : number) => {
+        console.log("page:" ,newPage)
         setPage(newPage);
     };
 
@@ -143,6 +145,7 @@ const ProductList = () => {
         //console.log(user)
         if (input.length > 2) {
             getSearchProduct()
+            setPage(0);
             setAlert(1)
         } else {
             getProducts()
