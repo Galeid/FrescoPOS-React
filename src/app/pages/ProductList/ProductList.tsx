@@ -58,6 +58,10 @@ const useStyles = makeStyles(() => ({
     nomargin: {
         margin: 0
     },
+    rootbutton: {
+       minWidth: 'auto',
+       padding: '6px 8px 6px 8px'
+    }
 }));
 
 const ProductList = () => {
@@ -269,7 +273,7 @@ const ProductList = () => {
                                             (user != null) ?
                                                 (user.idRole === 1) ?
                                                     <TableCell align="center">
-                                                        <Grid container spacing={3}>
+                                                        <Grid container spacing={2}>
                                                             <Grid
                                                                 item
                                                                 xs={6} //12
@@ -278,7 +282,10 @@ const ProductList = () => {
                                                                     variant="contained"
                                                                     color="default"
                                                                     startIcon={<Edit />}
-                                                                    classes={{ startIcon: classes.nomargin }}
+                                                                    classes={{
+                                                                        startIcon: classes.nomargin,
+                                                                        root: classes.rootbutton
+                                                                     }}
                                                                     onClick={() => {
                                                                         history.push(`/productsDetails/${p.idProduct}`)
                                                                     }}
@@ -292,7 +299,10 @@ const ProductList = () => {
                                                                     variant="contained"
                                                                     color="secondary"
                                                                     onClick={() => deleteProduct(p.idProduct)}
-                                                                    classes={{ startIcon: classes.nomargin }}
+                                                                    classes={{
+                                                                        startIcon: classes.nomargin,
+                                                                        root: classes.rootbutton
+                                                                    }}
                                                                     startIcon={<Delete />}
                                                                 />
                                                             </Grid>

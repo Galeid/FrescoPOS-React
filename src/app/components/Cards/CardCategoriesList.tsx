@@ -49,6 +49,10 @@ const useStyles = makeStyles(() => ({
     nomargin: {
         margin: 0
     },
+    rootbutton: {
+        minWidth: 'auto',
+        padding: '6px 8px 6px 8px'
+    }
 }));
 
 const CategoriesList = (props: { list: any; }) => {
@@ -183,7 +187,7 @@ const CategoriesList = (props: { list: any; }) => {
                                 <TableRow>
                                     <TableCell align="center">Nombre</TableCell>
                                     <TableCell align="center">Descripcion</TableCell>
-                                    <TableCell align="center">Detalles</TableCell>
+                                    <TableCell align="center">Acciones</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -208,7 +212,10 @@ const CategoriesList = (props: { list: any; }) => {
                                                             variant="contained"
                                                             color="default"
                                                             startIcon={<Edit />}
-                                                            classes={{ startIcon: classes.nomargin }}
+                                                            classes={{
+                                                                startIcon: classes.nomargin,
+                                                                root: classes.rootbutton
+                                                            }}
                                                             onClick={() => {
                                                                 //console.log('idCategory: ', p.idCategory)
                                                                 history.push(`/categoriesId/${p.idCategory}`)
@@ -225,7 +232,10 @@ const CategoriesList = (props: { list: any; }) => {
                                                             onClick={() =>
                                                                 deleteCategory(p.idCategory)
                                                             }
-                                                            classes={{ startIcon: classes.nomargin }}
+                                                            classes={{
+                                                                startIcon: classes.nomargin,
+                                                                root: classes.rootbutton
+                                                            }}
                                                             startIcon={<Delete />}
                                                         />
                                                     </Grid>

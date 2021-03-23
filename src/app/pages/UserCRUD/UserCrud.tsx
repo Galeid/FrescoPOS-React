@@ -21,17 +21,15 @@ const useStyles = makeStyles(() => ({
        margin: '10px',
        alignItems: 'center'
    },
+   buttonadd: {
+      margin: '0 0 0 auto'
+   },
    nomargin: {
        margin: 0
    },
-   bgred: {
-      backgroundColor: '#D44B3E'
-   },
-   bggreen: {
-      backgroundColor: '#89C363'
-   },
-   buttonadd: {
-      margin: '0 0 0 auto'
+   rootbutton: {
+      minWidth: 'auto',
+      padding: '6px 8px 6px 8px'
    }
 }));
 
@@ -162,7 +160,10 @@ const UserCrud = () => {
                                        variant="contained"
                                        color="default"
                                        startIcon={<Edit />}
-                                       classes={{ startIcon: classes.nomargin}}
+                                       classes={{
+                                          startIcon: classes.nomargin,
+                                          root: classes.rootbutton
+                                       }}
                                        onClick={() => {
                                        history.push(`/usersDetails/${u.idUser}`)
                                        }}
@@ -171,18 +172,24 @@ const UserCrud = () => {
                                  <Grid item xs={4}>
                                     <Button
                                        variant="contained"
+                                       color="secondary"
                                        onClick={() => changeStateUser(u)}
-                                       classes={{ startIcon: classes.nomargin}}
-                                       className={ u.stateUser ?  classes.bgred : classes.bggreen}
+                                       classes={{
+                                          startIcon: classes.nomargin,
+                                          root: classes.rootbutton
+                                       }}
                                        startIcon={<Block />}
                                     />
                                  </Grid>
                                  <Grid item xs={4}>
                                     <Button
                                        variant="contained"
+                                       color="secondary"
                                        onClick={() => deleteUser(u)}
-                                       classes={{ startIcon: classes.nomargin}}
-                                       className={ classes.bgred }
+                                       classes={{
+                                          startIcon: classes.nomargin,
+                                          root: classes.rootbutton
+                                       }}
                                        startIcon={<Delete />}
                                     />
                                  </Grid>

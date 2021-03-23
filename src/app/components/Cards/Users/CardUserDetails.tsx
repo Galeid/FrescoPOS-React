@@ -165,7 +165,6 @@ const CardUserDetails = (props: { idUser: any; }) => {
                         onChange={handleChange}
                         value={userDB.passwordUser || ''}
                         name="passwordUser"
-                        type="password"
                         variant="outlined"
                      />
                   </Grid>

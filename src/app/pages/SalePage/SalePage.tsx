@@ -59,6 +59,25 @@ const isNumeric = (str: any) => {
 const useStyles = makeStyles({
    center: {
       textAlign: 'center'
+   },
+   autocominput: {
+      paddingBottom: '0px',
+      paddingTop: '0px',
+      paddingLeft: '0px'
+   },
+   inputRoot: {
+      '&&[class*="MuiOutlinedInput-root"] $input': {
+         padding: '0'
+      }
+   },
+   tfInputmargin: {
+      padding: '9px 9px 9px 9px'
+   },
+   tflabel: {
+      transform: 'translate(10px, 12px) scale(1)'
+   },
+   fclabel: {
+      fontSize: '0.9rem'
    }
 })
 
@@ -360,13 +379,16 @@ const SalePage = () => {
 
    return (
       <>
-         <Grid container spacing={1}>
+         <Grid container spacing={2}>
             <Grid item xs={8}>
                <Card>
                   <CardContent>
                      <Grid container spacing={1}>
                         <Grid item xs={10}>
                            <Autocomplete
+                              classes={{
+                                 inputRoot: classes.inputRoot
+                              }}
                               freeSolo
                               autoComplete
                               autoHighlight
@@ -387,7 +409,7 @@ const SalePage = () => {
                            /> 
                         </Grid>
                         <Grid item xs={2}>
-                           <Button onClick={addSaleProduct}>Agregar</Button>
+                           <Button variant="contained" color="primary" onClick={addSaleProduct}>Agregar</Button>
                         </Grid>
                      </Grid>
                   </CardContent>
@@ -424,7 +446,7 @@ const SalePage = () => {
                                        <TableCell align="center">{p.priceProduct}</TableCell>
                                        <TableCell align="center">{p.amountProduct}</TableCell>
                                        <TableCell align="center">
-                                          <Button color="primary" onClick={() => deleteSaleProduct(index)}>DEL</Button>
+                                          <Button variant="contained" color="primary" onClick={() => deleteSaleProduct(index)}>DEL</Button>
                                        </TableCell>
                                     </TableRow>
                                 ))}
@@ -442,39 +464,65 @@ const SalePage = () => {
                   </Typography>
                </Box>
 
-               <Box bgcolor="#ABB2BF" color="white" py={4} px={3}>
-                  <TextField variant="outlined" label="Nombre del Cliente" value={clientName} onChange={inputChangeClient}/>
+               <Box bgcolor="#ABB2BF" py={3} px={3}>
+                  <TextField
+                     fullWidth
+                     InputProps={{ classes: { input: classes.tfInputmargin } }}
+                     InputLabelProps={{ classes: { outlined: classes.tflabel } }}
+                     variant="outlined" 
+                     label="Nombre del Cliente" 
+                     value={clientName} 
+                     onChange={inputChangeClient}
+                     style={{ marginBottom: '8px'}}
+                  />
+
                   <FormControl>
-                     <FormLabel>Tipo de Voucher</FormLabel>
+                     <FormLabel style={{ color: 'black' }}>Tipo de Voucher</FormLabel>
                      <RadioGroup row aria-label="voucher" value={saleVoucher} onChange={radioVoucher}>
-                        <FormControlLabel value="boleta" control={<Radio />} label="Boleta" />
-                        <FormControlLabel value="factura" control={<Radio />} label="Factura" />
+                        <FormControlLabel value="boleta" control={<Radio />} label="Boleta" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="factura" control={<Radio />} label="Factura" classes={{ label: classes.fclabel}}/>
                      </RadioGroup>
                   </FormControl>
 
-                  <Divider />
+                  <Divider style={{ marginBottom: '8px' }}/>
                   <FormControl>
-                     <FormLabel>Método de Pago</FormLabel>
+                     <FormLabel style={{ color: 'black' }}>Método de Pago</FormLabel>
                      <RadioGroup row aria-label="waytopay" value={saleWayToPay} onChange={radioWayToPay}>
-                        <FormControlLabel value="efectivo" control={<Radio />} label="Efectivo" />
-                        <FormControlLabel value="tarjeta" control={<Radio />} label="Tarjeta" />
+                        <FormControlLabel value="efectivo" control={<Radio />} label="Efectivo" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="tarjeta" control={<Radio />} label="Tarjeta" classes={{ label: classes.fclabel}}/>
                      </RadioGroup>
                   </FormControl>
 
-                  <Divider />
-                  <TextField variant="outlined" label="Monto del Pago" type="number" value={cashPayment} onChange={inputChangeCash}/>
-                  <Grid container spacing={1}>
+                  <Divider style={{ marginBottom: '8px' }}/>
+                  
+
+                  <Grid container spacing={0} style={{ marginBottom: '8px'}}>
                      <Grid item xs={6}>
-                        <Typography variant="body2"> CAMBIO: </Typography>
+                        <TextField 
+                           fullWidth
+                           InputProps={{ classes: { input: classes.tfInputmargin } }}
+                           InputLabelProps={{ classes: { outlined: classes.tflabel } }}
+                           variant="outlined"
+                           label="Monto del Pago"
+                           type="number"
+                           value={cashPayment}
+                           onChange={inputChangeCash}
+                           style={{ marginRight: '4px'}}
+                        />
                      </Grid>
-                     <Grid item xs={6}>
-                        <Typography variant="body2" className={classes.center}> S/. {change} </Typography>
+                     <Grid container item xs={6}>
+                        <Grid item xs={5} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                           <Typography variant="body2" style={{ fontSize: '0.8rem'}}> CAMBIO: </Typography>
+                        </Grid>
+                        <Grid item xs={7} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                           <Typography variant="body2" className={classes.center}> S/. {change} </Typography>
+                        </Grid>
                      </Grid>
                   </Grid>
 
-                  <Divider />
+                  <Divider style={{ marginBottom: '8px' }}/>
                   <Grid container spacing={0}>
-                     <Grid container item xs={12} spacing={1}>
+                     <Grid container item xs={12}>
                         <Grid item xs={6}>
                            <Typography variant="body2"> SUB TOTAL </Typography>
                         </Grid>
@@ -483,7 +531,7 @@ const SalePage = () => {
                         </Grid>
                      </Grid>
 
-                     <Grid container item xs={12} spacing={1}>
+                     <Grid container item xs={12}>
                         <Grid item xs={6}>
                            <Typography variant="body2"> I.G.V (18%) </Typography>
                         </Grid>
@@ -492,7 +540,7 @@ const SalePage = () => {
                         </Grid>
                      </Grid>
 
-                     <Grid container item xs={12} spacing={1}>
+                     <Grid container item xs={12}>
                         <Grid item xs={6}>
                            <Typography variant="body2"> TOTAL </Typography>
                         </Grid>
@@ -500,10 +548,10 @@ const SalePage = () => {
                            <Typography variant="body2" className={classes.center}> S/. {total} </Typography>
                         </Grid>
                      </Grid>
+
+                     <Button fullWidth variant="contained" color="primary" onClick={createSale} style={{ marginTop: '8px' }}>Registrar Venta</Button>
                   </Grid>
                </Box>
-
-               <Button color="primary" onClick={createSale}>Registrar Venta</Button>
             </Grid>
          </Grid>
       </>
