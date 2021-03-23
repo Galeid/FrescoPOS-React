@@ -15,6 +15,9 @@ const useStyles = makeStyles(() => ({
     },
     name: {
         alignContent: 'right'
+    },
+    toolbar:{
+        backgroundColor: '#52616b',
     }
 }));
 
@@ -38,7 +41,7 @@ const HeaderBody = () => {
     }
 
     return (
-        <Toolbar>
+        <Toolbar className={classes.toolbar}>
             <Typography variant="h6" className={classes.title}>
                 <DateTime />
             </Typography>

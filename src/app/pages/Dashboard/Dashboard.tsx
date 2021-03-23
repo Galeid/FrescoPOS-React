@@ -172,7 +172,7 @@ const MainPage = () => {
                   if (userRole.includes(user.idRole)) visibility = true
                   return visibility && (
                      <Grid item key={title} xs={6} sm={3} >
-                        <CardsHeader icono={icon} titulo={title} texto={text} onClick={onClick} color="rgba(248,80,50,1)" font="white" />
+                        <CardsHeader icono={icon} titulo={title} texto={text} onClick={onClick} font="white" />
                      </Grid>
                   )
                })}

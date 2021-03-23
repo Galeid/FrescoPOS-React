@@ -18,7 +18,8 @@ import Categories from './pages/Categories/Categories';
 
 //Context and Styles
 import { AuthContext } from '../services/AuthContext';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
 
 const useStyles = makeStyles((theme) => ({
     app: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: 'white',
         padding: theme.spacing(3),
     },
     '@global': {
@@ -44,6 +45,23 @@ const useStyles = makeStyles((theme) => ({
     toolbar: theme.mixins.toolbar,
 }));
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ff7961',
+      main: '#E74C3C',
+      dark: '#ba000d',
+      contrastText: '#FDFEFE',
+    },
+  },
+});
+
 const App = () => {
     const [user, setUser] = useState(null);
     const authProviderValue = useMemo(() => ({ user, setUser }), [user, setUser])
@@ -52,31 +70,33 @@ const App = () => {
 
     return (
         <div className={classes.app}>
-            <AuthContext.Provider value={authProviderValue}>
-                <Router>
-                    {user ?
-                        <>
-                            <Header />
-                            <SideBar />
-                        </>
-                        : false
-                    }
-                    <div className={classes.content}>
-                        <div className={classes.toolbar} />
-                        <Switch>
-                            <Route path="/categories" component={Categories} />
-                            <Route path="/categoriesId/:idCategory" component={Categories} />
-                            <Route path="/productsDetails/:idProduct" component={ProductCrud} />
-                            <Route path="/usersDetails/:idUser" component={UserDetail} />
-                            <Route path="/products" component={ProductList} />
-                            <Route path="/sale" component={SalePage} />
-                            <Route path="/dashboard" component={MainPage} />
-                            <Route path="/users" component={UserCrud}/>
-                            <Route path="/" exact={true} component={LoginPage} />
-                        </Switch>
-                    </div>
-                </Router>
-            </AuthContext.Provider>
+            <ThemeProvider theme={theme}>
+                <AuthContext.Provider value={authProviderValue}>
+                    <Router>
+                        {user ?
+                            <>
+                                <Header />
+                                <SideBar />
+                            </>
+                            : false
+                        }
+                        <div className={classes.content}>
+                            <div className={classes.toolbar} />
+                            <Switch>
+                                <Route path="/categories" component={Categories} />
+                                <Route path="/categoriesId/:idCategory" component={Categories} />
+                                <Route path="/productsDetails/:idProduct" component={ProductCrud} />
+                                <Route path="/usersDetails/:idUser" component={UserDetail} />
+                                <Route path="/products" component={ProductList} />
+                                <Route path="/sale" component={SalePage} />
+                                <Route path="/dashboard" component={MainPage} />
+                                <Route path="/users" component={UserCrud}/>
+                                <Route path="/" exact={true} component={LoginPage} />
+                            </Switch>
+                        </div>
+                    </Router>
+                </AuthContext.Provider>
+            </ThemeProvider>
         </div>
     )
 }

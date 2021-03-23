@@ -212,7 +212,7 @@ const CategoriesList = (props: { list: any; }) => {
                                                     >
                                                         <Button
                                                             variant="contained"
-                                                            color="default"
+                                                            color="primary"
                                                             startIcon={<Edit />}
                                                             classes={{
                                                                 startIcon: classes.nomargin,

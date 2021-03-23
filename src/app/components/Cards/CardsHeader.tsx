@@ -2,12 +2,13 @@ import React from 'react';
 import { CardActionArea, Typography, CardContent } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-function CardsHeader(props: { titulo: any, texto: any, icono: any, color: any, font: any, onClick: any }) {
+function CardsHeader(props: { titulo: any, texto: any, icono: any, font: any, onClick: any }) {
 
     const useStyles = makeStyles(() => ({
         root: {
             textAlign: 'center',
-            background: props.color
+            backgroundColor: '#0f4c75',
+            border: '1px solid #f0f5f9'
         },
         texto: {
             fontSize: 18,

@@ -464,7 +464,7 @@ const SalePage = () => {
                   </Typography>
                </Box>
 
-               <Box bgcolor="#ABB2BF" py={3} px={3}>
+               <Box border={1}  py={3} px={3}>
                   <TextField
                      fullWidth
                      InputProps={{ classes: { input: classes.tfInputmargin } }}
