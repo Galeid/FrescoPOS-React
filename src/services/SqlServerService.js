@@ -188,6 +188,7 @@ const updateProductId = (event, args) => {
     return new Promise((resolve, reject) => {
         connectToServer()
         .then(connection => {
+            args.IdCategory.type = TYPES.NVarChar
             args.Barcode.type = TYPES.NVarChar
             args.NameProduct.type = TYPES.NVarChar
             args.StockProduct.type = TYPES.NVarChar
@@ -220,6 +221,7 @@ const insertProduct = (event, args) => {
         connectToServer()
         .then(connection => {
             console.log('insert')
+            args.IdCategory.type = TYPES.NVarChar
             args.Barcode.type = TYPES.NVarChar
             args.NameProduct.type = TYPES.NVarChar
             args.StockProduct.type = TYPES.NVarChar
@@ -323,6 +325,81 @@ const deleteUser = (event, args) => {
     })
 }
 
+const getCategories = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(categories => resolve(categories))
+            .catch(err => reject(err))
+    })
+}
+
+const searchCategories = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Entry.type = TYPES.NVarChar
+                return readDB(connection, args)
+            })
+            .then(products => resolve(products))
+            .catch(err => reject(err))
+    })
+}
+
+const searchIdCategory = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Entry.type = TYPES.NVarChar
+                return readDB(connection, args)
+            })
+            .then(product => resolve(product))
+            .catch(err => reject(err))
+    })
+}
+
+const insertCategory = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+        .then(connection => {
+            args.NameCategory.type = TYPES.NVarChar
+            args.DescriptionCategory.type = TYPES.NVarChar
+            console.log('args: ', args)
+            return updateDb(connection, args)
+        })
+        .then(message => resolve(message))
+        .catch(err => reject(err))
+    })
+}
+
+const updateCategoryId = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+        .then(connection => {
+            args.NameCategory.type = TYPES.NVarChar
+            args.DescriptionCategory.type = TYPES.NVarChar
+            args.IdCategory.type = TYPES.Int
+            return updateDb(connection, args)
+        })
+        .then(message => resolve(message))
+        .catch(err => reject(err))
+    })
+}
+
+const deleteCategory = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Entry.type = TYPES.NVarChar
+                return readDB(connection, args)
+            })
+            .then(category => resolve(category))
+            .catch(err => reject(err))
+    })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -338,3 +415,9 @@ ipcMain.handle('updateuser', updateUser)
 ipcMain.handle('searchiduser', searchIdUser)
 ipcMain.handle('insertuser', insertUser)
 ipcMain.handle('deleteuser', deleteUser)
+ipcMain.handle('getcategories', getCategories)
+ipcMain.handle('searchcategories', searchCategories)
+ipcMain.handle('searchidcategory', searchIdCategory)
+ipcMain.handle('insertcategory', insertCategory)
+ipcMain.handle('updatecategoryid', updateCategoryId)
+ipcMain.handle('deletecategory', deleteCategory)

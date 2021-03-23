@@ -14,6 +14,7 @@ import MainPage from './pages/Dashboard/Dashboard';
 import SalePage from './pages/SalePage/SalePage';
 import UserCrud from './pages/UserCRUD/UserCrud';
 import UserDetail from './pages/UserDetail/UserDetail';
+import Categories from './pages/Categories/Categories';
 
 //Context and Styles
 import { AuthContext } from '../services/AuthContext';
@@ -63,6 +64,8 @@ const App = () => {
                     <div className={classes.content}>
                         <div className={classes.toolbar} />
                         <Switch>
+                            <Route path="/categories" component={Categories} />
+                            <Route path="/categoriesId/:idCategory" component={Categories} />
                             <Route path="/productsDetails/:idProduct" component={ProductCrud} />
                             <Route path="/usersDetails/:idUser" component={UserDetail} />
                             <Route path="/products" component={ProductList} />
@@ -77,5 +80,5 @@ const App = () => {
         </div>
     )
 }
-
+//<Route path="/categoriesId/:idCategory" component={(props: {idCategory: any}) => <Categories {...props} />} />
 export default App

@@ -12,7 +12,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../../services/AuthContext';
 
 //Icons
-//import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
 import LocalGroceryStoreIcon from '@material-ui/icons/LocalGroceryStore';
 import AddCircleIcon from '@material-ui/icons/AddCircle'
@@ -41,11 +40,6 @@ const SideBar = () => {
    const classes = useStyles();
 
    const itemsList = [
-      /*{
-         text: 'Home',
-         icon: <AccountCircleIcon className={classes.itemIcon} />,
-         onClick: () => history.push('/')
-      },*/
       {
          text: 'Dashboard',
          icon: <HomeIcon className={classes.itemIcon} />,
@@ -59,9 +53,15 @@ const SideBar = () => {
          userRole: [1,2]
       },
       {
-         text: 'User',
+         text: 'Usuarios',
          icon: <AddCircleIcon className={classes.itemIcon} />,
          onClick: () => history.push('/users'),
+         userRole: [1]
+      },
+      {
+         text: 'Categorías',
+         icon: <AddCircleIcon className={classes.itemIcon} />,
+         onClick: () => history.push('/categories'),
          userRole: [1]
       },
       {
@@ -70,11 +70,6 @@ const SideBar = () => {
          onClick: () => history.push('/products'),
          userRole: [1,2,3]
       },
-      /*{
-         text: 'ProductosDetails',
-         icon: <AddCircleIcon className={classes.itemIcon} />,
-         onClick: () => history.push('/productsDetails')
-      }*/
    ];
 
    return (

@@ -14,6 +14,7 @@ import LocalShipping from '@material-ui/icons/LocalShipping'
 import Accessibility from '@material-ui/icons/Accessibility'
 import Assignment from '@material-ui/icons/Assignment'
 import Build from '@material-ui/icons/Build'
+import Class from '@material-ui/icons/Class'
 
 import CardsHeader from '../../components/Cards/CardsHeader';
 
@@ -79,10 +80,16 @@ const MainPage = () => {
          onClick: () => history.push('/products')
       },
       {
-         title: 'Ventas',
+         title: 'Ventas (Beta)',
          text: 'Ver',
          icon: <MonetizationOn className={classes.itemIcon} />,
          onClick: () => history.push('/sale')
+      },
+      {
+         title: 'Categorias',
+         text: 'Ver',
+         icon: <Class className={classes.itemIcon} />,
+         onClick: () => history.push('/categories')
       },
       {
          title: 'Estadisticas',

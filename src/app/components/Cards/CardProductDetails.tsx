@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//import { ipcRenderer as ipc } from 'electron'
-
+import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -23,25 +22,32 @@ import {
 } from '@material-ui/core';
 
 const { ipcRenderer } = window.require('electron')
-interface Product {
-    idProduct: string,
-    barcodeProduct: string,
-    nameProduct: string,
-    stockProduct: string,
-    priceProduct: string,
-    dateProduct: string,
-    descriptionProduct: string,
-    stateProduct: string
-}
 
-let productInterface: Product[] = []
+interface Category {
+    idCategory: string,
+    nameCategory: string,
+    descriptionCategory: string
+}
+let categoriesFromDB: Category[] = []
+
+const useStyles = makeStyles((theme) => ({
+    textField: {
+        width: '100%',
+        "& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+            display: "none"
+        }
+    }
+}));
 
 const CardProductDetails = (props: { idProduct: any; }) => {
     let registro: Date = new Date();
     let id = props.idProduct;
     let history = useHistory()
+    // eslint-disable-next-line
+    const classes = useStyles()
     const [productDB, setProductDB] = useState({
         idProduct: '',
+        idCategory: 0,
         barcodeProduct: '',
         nameProduct: '',
         stockProduct: '',
@@ -50,10 +56,20 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         descriptionProduct: '',
         stateProduct: ''
     })
+    const [categoryDB, setCategoryDB] = useState(categoriesFromDB)
+
     //const [stockInitial, setStockInitial] = useState(null)
     //const [productDB2, setProductDB2] = useState()
+    const getCategories = () => {
+        const prepareData = {
+            spName: 'spListCategories'
+        }
+        ipcRenderer.invoke('getcategories', prepareData)
+            .then((categories: any) => {
+                setCategoryDB(categories)
+            })
+    }
 
-    //console.log("Recibiendo id: ", props.idProduct)
     const getProductsId = () => {
         const prepareData = {
             Entry: { value: props.idProduct },
@@ -61,14 +77,14 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         }
         ipcRenderer.invoke('searchidproduct', prepareData)
             .then((product: any) => {
-                productInterface = product
-                setProductDB(productInterface[0])
+                setProductDB(product[0])
             })
     }
 
     const insertProducts = () => {
         console.log('insertProducts')
         const prepareData = {
+            IdCategory: { value: productDB.idCategory },
             Barcode: { value: productDB.barcodeProduct },
             NameProduct: { value: productDB.nameProduct },
             StockProduct: { value: productDB.stockProduct },
@@ -80,7 +96,6 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         }
 
         if (productDB.nameProduct !== '' && productDB.priceProduct !== '' && productDB.stateProduct !== '') {
-            console.log('Hola1')
             ipcRenderer.invoke('insertproduct', prepareData)
                 .then(() => {
                     Alert('success', 'Se agrego el producto con exito')
@@ -90,20 +105,18 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                     Alert('error', 'Ha ocurrido un error')
                 })
         } else {
-            console.log('Hola2')
             Alert('error', 'Debe llenar los campos primero')
         }
     }
     //var registro = Date.now();
     const updateProductsId = () => {
         const prepareData = {
+            IdCategory: { value: productDB.idCategory },
             Barcode: { value: productDB.barcodeProduct },
             NameProduct: { value: productDB.nameProduct },
             StockProduct: { value: productDB.stockProduct },
             PriceProduct: { value: productDB.priceProduct },
-            //dateProduct: Intl.DateTimeFormat(['ban', 'id']).format(registro),
             DateProduct: { value: registro },
-            //dateProduct: productDB.dateProduct,
             DescriptionProduct: { value: productDB.descriptionProduct },
             StateProduct: { value: productDB.stateProduct },
             IdProduct: { value: productDB.idProduct },
@@ -116,6 +129,22 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             }).catch((err: any) => console.log(err))
         //poenr alerta
     }
+
+    const handleChange = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
+        if (event.target.name === "barcodeProduct" || event.target.name === "stockProduct") {
+            const onlyNums = String(event.target.value).replace(/[^0-9]/g, "");
+            setProductDB({
+                ...productDB,
+                [event.target.name]: onlyNums
+            });
+        }
+        else {
+            setProductDB({
+                ...productDB,
+                [event.target.name as string]: event.target.value as string
+            });
+        }
+    };
 
     const Alert = (iconText: any, titleText: {} | null | undefined) => {
         const MySwal = withReactContent(Swal)
@@ -131,49 +160,17 @@ const CardProductDetails = (props: { idProduct: any; }) => {
 
     useEffect(() => {
         if (id !== 'null') {
-            console.log('con id: ', props)
             getProductsId()
-        } else {
-            console.log('sin id: ', props)
         }
+        getCategories()
         // eslint-disable-next-line
     }, [])
 
-    const handleChange = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
-        if (event.target.name === "barcodeProduct" || event.target.name === "stockProduct" || event.target.name === "priceProduct") {
-            if (event.target.name === "priceProduct") {
-                setProductDB({
-                    ...productDB,
-                    [event.target.name]: event.target.value as string
-                });
-
-            } else {
-                const onlyNums = String(event.target.value).replace(/[^0-9]/g, "");
-                setProductDB({
-                    ...productDB,
-                    [event.target.name]: onlyNums
-                });
-            }
-        }
-        else {
-            setProductDB({
-                ...productDB,
-                [event.target.name as string]: event.target.value as string
-            });
-        }
-    };
-
-    const handleFocus = (event: { preventDefault?: any; target?: any; }) => {
-        event.preventDefault();
-        const { target } = event;
-        const extensionStarts = target.value.lastIndexOf('.');
-        target.focus();
-        target.setSelectionRange(0, extensionStarts);
-    }
     return (
         <form
             autoComplete="off"
             noValidate
+            onSubmit={e => { e.preventDefault(); }}
         >
             <Card>
                 <CardHeader
@@ -198,8 +195,6 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                             <TextField
                                 fullWidth
                                 required
-                                //error={productDB.nameProduct === ""}
-                                //helperText={productDB.nameProduct === "" ? 'Este campo no puede estar vacio' : ' '}
                                 label="Nombre del producto"
                                 onChange={handleChange}
                                 value={productDB.nameProduct || ''}
@@ -223,6 +218,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                 fullWidth
                                 required
                                 label="Precio"
+                                className={classes.textField}
                                 onChange={handleChange}
                                 value={productDB.priceProduct || ''}
                                 name="priceProduct"
@@ -235,43 +231,73 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                 fullWidth
                                 required
                                 label="Notas"
-                                onFocus={handleFocus}
                                 onChange={handleChange}
-                                value={productDB.descriptionProduct || 'No hay notas'}
+                                value={productDB.descriptionProduct || ''}
                                 placeholder={productDB.descriptionProduct || 'No hay notas'}
                                 name="descriptionProduct"
                                 variant="outlined"
                                 multiline
-                                rows={4}
-                                rowsMax={4}
+                                rows={6}
+                                rowsMax={6}
                             />
                         </Grid>
                         <Grid item md={6} xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel
-                                    disableAnimation={false}
-                                >
-                                    Estado
-                                </InputLabel>
-                                <Select 
-                                    fullWidth
-                                    required
-                                    value={productDB.stateProduct}
-                                    onChange={handleChange}
-                                    input={<Input name="stateProduct" />}
-                                >
-                                    <MenuItem selected value={productDB.stateProduct}>
-                                        <em>{productDB.stateProduct === '1' ? 'Activo' : 'Inactivo'}</em>
-                                    </MenuItem>
-                                    {
-                                        productDB.stateProduct === '1' ?
-                                            <MenuItem value='0'>Inactivo</MenuItem>
-                                            :
-                                            <MenuItem value='1'>Activo</MenuItem>
-                                    }
-                                </Select>
-                                <FormHelperText>Selecciona al menos una opcion</FormHelperText>
-                            </FormControl>
+                            <Grid container wrap="nowrap" spacing={2}>
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <InputLabel
+                                            disableAnimation={false}
+                                        >
+                                            Estado
+                                        </InputLabel>
+                                        <Select
+                                            fullWidth
+                                            required
+                                            value={productDB.stateProduct}
+                                            onChange={handleChange}
+                                            input={<Input name="stateProduct" />}
+                                        >
+                                            <MenuItem selected value={productDB.stateProduct}>
+                                                <em>{
+                                                    Number(productDB.stateProduct) === 1 ? 'Activo' : 'Inactivo'
+                                                }</em>
+                                            </MenuItem>
+                                            {
+                                                Number(productDB.stateProduct) === 1 ?
+                                                    <MenuItem value='0'>Inactivo</MenuItem>
+                                                    :
+                                                    <MenuItem value='1'>Activo</MenuItem>
+                                            }
+                                        </Select>
+                                        <FormHelperText>Selecciona al menos una opcion</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+                            <Grid container wrap="nowrap" spacing={2}>
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <InputLabel
+                                            disableAnimation={false}
+                                        >
+                                            Categoria
+                                        </InputLabel>
+                                        <Select
+                                            fullWidth
+                                            required
+                                            value={productDB.idCategory || ''}
+                                            onChange={handleChange}
+                                            input={<Input name="idCategory" />}
+                                        >
+                                            {
+                                                categoryDB.map((p, index) => (
+                                                    <MenuItem key={index} value={p.idCategory}>{p.nameCategory}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                        <FormHelperText>Selecciona al menos una opcion</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </CardContent>
