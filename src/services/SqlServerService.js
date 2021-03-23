@@ -188,7 +188,7 @@ const updateProductId = (event, args) => {
     return new Promise((resolve, reject) => {
         connectToServer()
         .then(connection => {
-            args.IdCategory.type = TYPES.NVarChar
+            args.IdCategory.type = TYPES.Int
             args.Barcode.type = TYPES.NVarChar
             args.NameProduct.type = TYPES.NVarChar
             args.StockProduct.type = TYPES.NVarChar

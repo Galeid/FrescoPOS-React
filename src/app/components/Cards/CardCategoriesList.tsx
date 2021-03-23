@@ -87,6 +87,7 @@ const CategoriesList = (props: { list: any; }) => {
             .then(() => {
                 Alert('info', 'Se elimino correctamente')
                 getCategories()
+                setPage(0)
             })
     }
 
@@ -134,6 +135,7 @@ const CategoriesList = (props: { list: any; }) => {
         }
         if (input.length > 2) {
             getSearchCategory()
+            setPage(0);
             setAlert(1)
         } else {
             getCategories()

@@ -77,19 +77,22 @@ const MainPage = () => {
          title: 'Productos',
          text: 'Ver',
          icon: <AirportShuttle className={classes.itemIcon} />,
-         onClick: () => history.push('/products')
+         onClick: () => history.push('/products'),
+         userRole: [1,2,3]
       },
       {
          title: 'Ventas (Beta)',
          text: 'Ver',
          icon: <MonetizationOn className={classes.itemIcon} />,
-         onClick: () => history.push('/sale')
+         onClick: () => history.push('/sale'),
+         userRole: [1,2]
       },
       {
          title: 'Categorias',
          text: 'Ver',
          icon: <Class className={classes.itemIcon} />,
-         onClick: () => history.push('/categories')
+         onClick: () => history.push('/categories'),
+         userRole: [1]
       },
       {
          title: 'Estadisticas',
@@ -98,7 +101,8 @@ const MainPage = () => {
          onClick: () => {
             history.push('/dashboard')
             Alert()
-         }
+         },
+         userRole: [1,2]
       },
       {
          title: 'Orden de Compra',
@@ -107,7 +111,8 @@ const MainPage = () => {
          onClick: () => {
             history.push('/dashboard')
             Alert()
-         }
+         },
+         userRole: [1,2,3]
       },
       {
          title: 'Proveedores',
@@ -116,7 +121,8 @@ const MainPage = () => {
          onClick: () => {
             history.push('/dashboard')
             Alert()
-         }
+         },
+         userRole: [1,2,3]
       },
       {
          title: 'Mi Personal',
@@ -125,7 +131,8 @@ const MainPage = () => {
          onClick: () => {
             history.push('/dashboard')
             Alert()
-         }
+         },
+         userRole: [1,2,3]
       },
       {
          title: 'Reportes',
@@ -134,7 +141,8 @@ const MainPage = () => {
          onClick: () => {
             history.push('/dashboard')
             Alert()
-         }
+         },
+         userRole: [1,2,3]
       },
       {
          title: 'Soporte',
@@ -143,7 +151,8 @@ const MainPage = () => {
          onClick: () => {
             history.push('/dashboard')
             Alert()
-         }
+         },
+         userRole: [1,2,3]
       }
    ];
    //sm={4} md={4} lg={4} xl={4}
@@ -158,8 +167,10 @@ const MainPage = () => {
          <div className={classes.root}>
             <Grid container item={true} xs={12} spacing={3} direction="row" justify="space-evenly" alignItems="baseline">
                {itemsList.map((item) => {
-                  const { icon, title, text, onClick } = item;
-                  return (
+                  const { icon, title, text, onClick, userRole } = item;
+                  let visibility = false
+                  if (userRole.includes(user.idRole)) visibility = true
+                  return visibility && (
                      <Grid item key={title} xs={6} sm={3} >
                         <CardsHeader icono={icon} titulo={title} texto={text} onClick={onClick} color="rgba(248,80,50,1)" font="white" />
                      </Grid>
@@ -172,58 +183,5 @@ const MainPage = () => {
       : handleClick2()
    )
 }
-/*
-            <Grid container item={true} spacing={1} className={classes.container} xs={12} sm={12} md={6} lg={6} xl={6}>
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Cards titulo="SUSCRIPTORES" texto="692" />
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Cards titulo="VISUALIZACIONES" texto="111,092" />
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Cards titulo="TIEMPO VISUALIZACIÓN" texto="2,504 horas" />
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Cards titulo="PORCENTAJE IMPRESIONES" texto="14.2%" />
-                </Grid>
-            </Grid>
-*/
-//----------------------------------------------------------------
-/*<div className="album py-5 bg-light">
-<div className="container">
-   <div className="row">
-      {
-         [...Array(4)].map((value, index) => (
-            <CardMainPage id={value} key={index} />
-         ))
-      }
-   </div>
-</div>
-</div>
-const CardMainPage = (id, key) => {
-   console.log("Buenas")
-   console.log("Id: " + id)
-   console.log("Key: " + key)
-   return (
-      <div className="col-md-4" key={key}>
-         <div className="card mb-4 box-shadow">
-            <img className="card-img-top" src="https://img.icons8.com/bubbles/2x/login-rounded-right.png"></img>
-            <div className="card-body">
-               <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-               <div className="d-flex justify-content-between align-items-center">
-                  <div className="btn-group">
-                     <button type="button" className="btn btn-sm btn-outline-secondary">Ver</button>
-                     <button type="button" className="btn btn-sm btn-outline-secondary">Editar</button>
-                  </div>
-                  <small className="text-muted">9 mins</small>
-               </div>
-            </div>
-         </div>
-      </div>
-   )
-}*/
 
 export default MainPage
