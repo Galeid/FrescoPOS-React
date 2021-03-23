@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -9,6 +9,7 @@ import {
    ListItemText,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { AuthContext } from '../../../services/AuthContext';
 
 //Icons
 //import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -35,6 +36,7 @@ const useStyles = makeStyles({
 });
 
 const SideBar = () => {
+   const { user } = useContext(AuthContext)
    let history = useHistory();
    const classes = useStyles();
 
@@ -47,22 +49,26 @@ const SideBar = () => {
       {
          text: 'Dashboard',
          icon: <HomeIcon className={classes.itemIcon} />,
-         onClick: () => history.push('/dashboard')
+         onClick: () => history.push('/dashboard'),
+         userRole: [1,2,3]
       },
       {
          text: 'Ventas (Beta)',
          icon: <LocalGroceryStoreIcon className={classes.itemIcon} />,
-         onClick: () => history.push('/sale')
+         onClick: () => history.push('/sale'),
+         userRole: [1,2]
       },
-      /*{
+      {
          text: 'User',
          icon: <AddCircleIcon className={classes.itemIcon} />,
-         onClick: () => history.push('/users')
-      },*/
+         onClick: () => history.push('/users'),
+         userRole: [1]
+      },
       {
          text: 'Productos',
          icon: <AddCircleIcon className={classes.itemIcon} />,
-         onClick: () => history.push('/products')
+         onClick: () => history.push('/products'),
+         userRole: [1,2,3]
       },
       /*{
          text: 'ProductosDetails',
@@ -75,8 +81,10 @@ const SideBar = () => {
       <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.paperDrawer }} anchor="left">
          <List>
             {itemsList.map((item) => {
-               const { text, icon, onClick } = item;
-               return (
+               const { text, icon, onClick, userRole} = item;
+               let visibility = false
+               if (userRole.includes(user.idRole)) visibility = true
+               return visibility && (
                   <ListItem button key={text} onClick={onClick}>
                      {icon && <ListItemIcon>{icon}</ListItemIcon>}
                      <ListItemText primary={text} className={classes.itemText} />

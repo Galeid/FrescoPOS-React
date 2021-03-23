@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Box, Grid, Card, CardContent, Button,
    TextField, Table, TableBody, TableCell, TableContainer,
    TableHead, TableRow, Typography, Divider, FormControl, 
@@ -6,7 +6,7 @@ import { Box, Grid, Card, CardContent, Button,
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
 import { makeStyles } from '@material-ui/core/styles';
-//import { ipcRenderer as ipc } from 'electron';
+import { AuthContext } from '../../../services/AuthContext'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -64,6 +64,7 @@ const useStyles = makeStyles({
 
 const SalePage = () => {
    const classes = useStyles()
+   const { user } = useContext(AuthContext)
 
    const [change, setChange] = useState(fillDecimals(0))
    const [cashPayment, setCashPayment] = useState(0)
@@ -72,9 +73,11 @@ const SalePage = () => {
    const [subTotal, setSubTotal] = useState(fillDecimals(0))
    const [total, setTotal] = useState(fillDecimals(0))
    const [igv, setIgv] = useState(fillDecimals(0))
+
    const [searchValue, setSearchValue] = useState('')
    const [searchOptions, setSearchOptions] = useState(searchoptionsFromDB)
    const [searchReason, setSearchReason] = useState('')
+
    const [saleProducts, setSaleProducts] = useState(productsFromDB)
    const [saleData, setSaleData] = useState(saledataFromDB)
    const [saleVoucher, setSaleVoucher] = useState('boleta')
@@ -318,7 +321,7 @@ const SalePage = () => {
       let dateval: Date = new Date();
       
       const prepareData = {
-         Iduser: { value: 2 },//obtener mediante contexto
+         Iduser: { value: user.idUser },
          Nameclient: { value: nameclientval },
          Voucher: { value: saleVoucher },
          Date: { value: dateval },

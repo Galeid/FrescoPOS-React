@@ -166,7 +166,7 @@ const ProductList = () => {
 
                             {
                                 (user != null) ?
-                                    (user.nameUser === 'admin') ?
+                                    (user.idRole === 1) ?
                                         <Button
                                             variant="contained"
                                             color="primary"
@@ -201,7 +201,7 @@ const ProductList = () => {
                                     <TableCell align="center">Estado</TableCell>
                                     {
                                         (user != null) ?
-                                            (user.nameUser === 'admin') ?
+                                            (user.idRole === 1) ?
                                                 <TableCell align="center">Detalles</TableCell>
                                                 :
                                                 false
@@ -246,7 +246,7 @@ const ProductList = () => {
                                         </TableCell>
                                         {
                                             (user != null) ?
-                                                (user.nameUser === 'admin') ?
+                                                (user.idRole === 1) ?
                                                     <TableCell align="center">
                                                         <Grid container spacing={3}>
                                                             <Grid

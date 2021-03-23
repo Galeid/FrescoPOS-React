@@ -14,18 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
 const { ipcRenderer } = window.require('electron')
-interface User {
-   idUser: number,
-   idRole: number,
-   nameUser: string,
-   passwordUser: string,
-   stateUser: number,
-   typedocUser: string,
-   numdocUser: string,
-   phoneUser: number,
-}
 
-let userLogged: User[] = []
+let userLogged: any[] = []
 
 const useStyles = makeStyles((theme) => ({
    paper: {
@@ -56,8 +46,8 @@ const LoginPage = () => {
    let history = useHistory();
 
    const [form, setForm] = useState({
-      username: 'employee',
-      password: 'employee'
+      username: 'admin',
+      password: 'admin'
    });
 
    const updateField = (event: { target: { name: any; value: any; }; }) => {
@@ -86,7 +76,7 @@ const LoginPage = () => {
                console.log(userLogged[0])
                history.push('/dashboard');
             } else {
-               console.log('Base de Datos: El usuario no se encuentra en la base de datos')
+               console.log('validateUser(): El usuario no se encuentra en la base de datos')
             }
          })
    }

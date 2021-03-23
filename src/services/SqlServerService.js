@@ -247,6 +247,82 @@ const deleteProduct = (event, args) => {
     })
 }
 
+const getUsers = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(users => resolve(users))
+            .catch(err => reject(err))
+    })
+}
+
+const updateUser = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Iduser.type = TYPES.Int
+                args.Idrole.type = TYPES.Int
+                args.Name.type = TYPES.NVarChar
+                args.Password.type = TYPES.NVarChar
+                args.State.type = TYPES.Bit
+                args.Typedoc.type = TYPES.NVarChar
+                args.Numdoc.type = TYPES.NVarChar
+                args.Phone.type = TYPES.Int
+                args.Email.type = TYPES.NVarChar
+                return updateDb(connection, args)
+            })
+            .then(message => resolve(message))
+            .catch(err => reject(err))
+    })
+}
+
+const searchIdUser = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Entry.type = TYPES.Int
+                return readDB(connection, args)
+            })
+            .then(user => resolve(user))
+            .catch(err => reject(err))
+    })
+}
+
+const insertUser = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+        .then(connection => {
+            console.log('insert')
+            args.Idrole.type = TYPES.Int
+            args.Name.type = TYPES.NVarChar
+            args.Password.type = TYPES.NVarChar
+            args.State.type = TYPES.Bit
+            args.Typedoc.type = TYPES.NVarChar
+            args.Numdoc.type = TYPES.NVarChar
+            args.Phone.type = TYPES.Int
+            args.Email.type = TYPES.NVarChar
+            console.log('args: ', args)
+            return updateDb(connection, args)
+        })
+        .then(message => resolve(message))
+        .catch(err => reject(err))
+    })
+}
+
+const deleteUser = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Entry.type = TYPES.NVarChar
+                return updateDb(connection, args)
+            })
+            .then(message => resolve(message))
+            .catch(err => reject(err))
+    })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -257,3 +333,8 @@ ipcMain.handle('createorder', createOrder)
 ipcMain.handle('updateproductid', updateProductId)
 ipcMain.handle('insertproduct', insertProduct)
 ipcMain.handle('deleteproduct', deleteProduct)
+ipcMain.handle('getusers', getUsers)
+ipcMain.handle('updateuser', updateUser)
+ipcMain.handle('searchiduser', searchIdUser)
+ipcMain.handle('insertuser', insertUser)
+ipcMain.handle('deleteuser', deleteUser)

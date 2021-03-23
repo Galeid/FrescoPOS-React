@@ -12,6 +12,8 @@ import ProductCrud from './pages/ProductCRUD/ProductCrud';
 import LoginPage from './pages/LoginPage/LoginPage';
 import MainPage from './pages/Dashboard/Dashboard';
 import SalePage from './pages/SalePage/SalePage';
+import UserCrud from './pages/UserCRUD/UserCrud';
+import UserDetail from './pages/UserDetail/UserDetail';
 
 //Context and Styles
 import { AuthContext } from '../services/AuthContext';
@@ -51,22 +53,22 @@ const App = () => {
         <div className={classes.app}>
             <AuthContext.Provider value={authProviderValue}>
                 <Router>
-                    {
-                        user ?
-                            <>
-                                <Header />
-                                <SideBar />
-                            </>
-                            :
-                            false
+                    {user ?
+                        <>
+                            <Header />
+                            <SideBar />
+                        </>
+                        : false
                     }
                     <div className={classes.content}>
                         <div className={classes.toolbar} />
                         <Switch>
                             <Route path="/productsDetails/:idProduct" component={ProductCrud} />
+                            <Route path="/usersDetails/:idUser" component={UserDetail} />
                             <Route path="/products" component={ProductList} />
                             <Route path="/sale" component={SalePage} />
                             <Route path="/dashboard" component={MainPage} />
+                            <Route path="/users" component={UserCrud}/>
                             <Route path="/" exact={true} component={LoginPage} />
                         </Switch>
                     </div>
