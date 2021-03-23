@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom'
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 //import Icon from '@material-ui/core/Icon';
-import {Delete, Edit, Add} from '@material-ui/icons';
+import { Delete, Edit, Add } from '@material-ui/icons';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import {
@@ -24,6 +24,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow
 } from '@material-ui/core';
 import Search from '@material-ui/icons/Search';
@@ -31,6 +32,7 @@ import Search from '@material-ui/icons/Search';
 const { ipcRenderer } = window.require('electron')
 interface Product {
     idProduct: string,
+    nameCategory: string,
     barcodeProduct: string,
     nameProduct: string,
     stockProduct: string,
@@ -60,11 +62,14 @@ const useStyles = makeStyles(() => ({
 
 const ProductList = () => {
     const classes = useStyles();
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [show, showProducts] = useState(false)
     const [input, setInput] = useState('')
     const [productDB, setProductDB] = useState(productsFromDB)
     const { user } = useContext(AuthContext)
     let history = useHistory()
+    const [alert , setAlert] = useState(0);
 
     const getProducts = () => {
         const prepareData = {
@@ -107,6 +112,15 @@ const ProductList = () => {
         setInput(e.target.value)
     }
 
+    const handleChangePage = (e : any, newPage : number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (e : any) => {
+        setRowsPerPage(parseInt(e.target.value, 10));
+        setPage(0);
+    };
+
     //Cambiar que solo se renderiza una vez
     useEffect(() => {
         const getSearchProduct = () => {
@@ -127,10 +141,12 @@ const ProductList = () => {
         }
         //console.log(productDB)
         //console.log(user)
-        if (input.length > 0) {
+        if (input.length > 2) {
             getSearchProduct()
+            setAlert(1)
         } else {
             getProducts()
+            setAlert(0)
         }
     }, [input])
 
@@ -140,12 +156,12 @@ const ProductList = () => {
                 <Box flexDirection="row-reverse">
                     <Card>
                         <CardContent>
-                            <Typography variant="h5" component="h2" style={{ marginBottom: '8px'}}>Lista de Productos:</Typography >
+                            <Typography variant="h5" component="h2" style={{ marginBottom: '8px' }}>Lista de Productos:</Typography >
                             <TextField
                                 fullWidth
                                 InputProps={{
                                     startAdornment: (
-                                        <InputAdornment position="start" style={{padding: '0px 0px'}}>
+                                        <InputAdornment position="start" style={{ padding: '0px 0px' }}>
                                             <SvgIcon
                                                 fontSize="small"
                                                 color="action"
@@ -160,6 +176,7 @@ const ProductList = () => {
                                 }}
                                 placeholder="Buscar productos"
                                 variant="outlined"
+                                helperText={alert ? "" : "Ingresa un minimo de 3 letras para comenzar la busqueda"}
                                 onChange={handleChange}
                                 value={input}
                             />
@@ -170,7 +187,7 @@ const ProductList = () => {
                                         <Button
                                             variant="contained"
                                             color="primary"
-                                            style={{marginTop: '10px'}}
+                                            style={{ marginTop: '10px' }}
                                             startIcon={<Add />}
                                             onClick={() => {
                                                 history.push(`/productsDetails/${null}`)
@@ -195,6 +212,7 @@ const ProductList = () => {
                                 <TableRow>
                                     <TableCell align="center">Codigo de Barras</TableCell>
                                     <TableCell align="center">Nombre</TableCell>
+                                    <TableCell align="center">Categoria</TableCell>
                                     <TableCell align="center">Stock</TableCell>
                                     <TableCell align="center">Precio S/.</TableCell>
                                     <TableCell align="center">Notas</TableCell>
@@ -211,10 +229,13 @@ const ProductList = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {productDB.map((p, index) => (
+                                {productDB
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((p, index) => (
                                     <TableRow key={index}>
                                         <TableCell align="center">{p.barcodeProduct}</TableCell>
                                         <TableCell align="center">{p.nameProduct}</TableCell>
+                                        <TableCell align="center">{p.nameCategory}</TableCell>
                                         <TableCell align="center">{p.stockProduct}</TableCell>
                                         <TableCell align="center">{p.priceProduct}</TableCell>
                                         <TableCell align="center">{p.descriptionProduct ?
@@ -257,7 +278,7 @@ const ProductList = () => {
                                                                     variant="contained"
                                                                     color="default"
                                                                     startIcon={<Edit />}
-                                                                    classes={{ startIcon: classes.nomargin}}
+                                                                    classes={{ startIcon: classes.nomargin }}
                                                                     onClick={() => {
                                                                         history.push(`/productsDetails/${p.idProduct}`)
                                                                     }}
@@ -269,9 +290,9 @@ const ProductList = () => {
                                                             >
                                                                 <Button
                                                                     variant="contained"
-                                                                    color="secondary" 
+                                                                    color="secondary"
                                                                     onClick={() => deleteProduct(p.idProduct)}
-                                                                    classes={{ startIcon: classes.nomargin}}
+                                                                    classes={{ startIcon: classes.nomargin }}
                                                                     startIcon={<Delete />}
                                                                 />
                                                             </Grid>
@@ -287,6 +308,17 @@ const ProductList = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={productDB.length}
+                        //count={productDB.length === -1 ? 1 * 10 + 1 : productDB.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        //page={( page > 0 && productDB.length === rowsPerPage ) ? 0 : page}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
                 </Grid>
             </Card>
         </>

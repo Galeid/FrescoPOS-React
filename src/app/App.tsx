@@ -12,6 +12,8 @@ import ProductCrud from './pages/ProductCRUD/ProductCrud';
 import LoginPage from './pages/LoginPage/LoginPage';
 import MainPage from './pages/Dashboard/Dashboard';
 import SalePage from './pages/SalePage/SalePage';
+import Categories from './pages/Categories/Categories';
+//import CategoriesId from './components/Cards/CardCategoriesCrud';
 
 //Context and Styles
 import { AuthContext } from '../services/AuthContext';
@@ -63,6 +65,8 @@ const App = () => {
                     <div className={classes.content}>
                         <div className={classes.toolbar} />
                         <Switch>
+                            <Route path="/categories" component={Categories} />
+                            <Route path="/categoriesId/:idCategory" component={Categories} />
                             <Route path="/productsDetails/:idProduct" component={ProductCrud} />
                             <Route path="/products" component={ProductList} />
                             <Route path="/sale" component={SalePage} />
@@ -75,5 +79,5 @@ const App = () => {
         </div>
     )
 }
-
+//<Route path="/categoriesId/:idCategory" component={(props: {idCategory: any}) => <Categories {...props} />} />
 export default App
