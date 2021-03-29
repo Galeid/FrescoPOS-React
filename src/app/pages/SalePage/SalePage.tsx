@@ -118,7 +118,7 @@ const SalePage = () => {
             stockProduct: saleProducts[saleProducts.length - 1].stockProduct,
             quantityProduct: 1,
             nameProduct: saleProducts[saleProducts.length - 1].nameProduct,
-            priceProduct: saleProducts[saleProducts.length - 1].priceProduct,
+            priceProduct: round2Decimals(saleProducts[saleProducts.length - 1].priceProduct),
             amountProduct: round2Decimals(saleProducts[saleProducts.length - 1].priceProduct),
          }
          let aux = [...saleData, newData]

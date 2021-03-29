@@ -16,6 +16,7 @@ import logo from './logo.jpeg';
 import HomeIcon from '@material-ui/icons/Home';
 import LocalGroceryStoreIcon from '@material-ui/icons/LocalGroceryStore';
 import AddCircleIcon from '@material-ui/icons/AddCircle'
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const sideBarWidth = 240
 const useStyles = makeStyles({
@@ -77,6 +78,12 @@ const SideBar = () => {
          onClick: () => history.push('/products'),
          userRole: [1, 2, 3]
       },
+      {
+         text: 'Reportes de Ventas',
+         icon: <DescriptionIcon className={classes.itemIcon} />,
+         onClick: () => history.push('/saleReports'),
+         userRole: [1, 2]
+      }
    ];
 
    return (

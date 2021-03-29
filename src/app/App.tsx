@@ -12,6 +12,7 @@ import ProductCrud from './pages/ProductCRUD/ProductCrud';
 import LoginPage from './pages/LoginPage/LoginPage';
 import MainPage from './pages/Dashboard/Dashboard';
 import SalePage from './pages/SalePage/SalePage';
+import SaleReports from './pages/SaleReports/SaleReports';
 import UserCrud from './pages/UserCRUD/UserCrud';
 import UserDetail from './pages/UserDetail/UserDetail';
 import Categories from './pages/Categories/Categories';
@@ -86,11 +87,12 @@ const App = () => {
                                 <Route path="/categories" component={Categories} />
                                 <Route path="/categoriesId/:idCategory" component={Categories} />
                                 <Route path="/productsDetails/:idProduct" component={ProductCrud} />
-                                <Route path="/usersDetails/:idUser" component={UserDetail} />
                                 <Route path="/products" component={ProductList} />
+                                <Route path="/saleReports" component={SaleReports} />
                                 <Route path="/sale" component={SalePage} />
-                                <Route path="/dashboard" component={MainPage} />
+                                <Route path="/usersDetails/:idUser" component={UserDetail} />
                                 <Route path="/users" component={UserCrud}/>
+                                <Route path="/dashboard" component={MainPage} />
                                 <Route path="/" exact={true} component={LoginPage} />
                             </Switch>
                         </div>
