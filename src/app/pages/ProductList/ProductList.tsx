@@ -36,7 +36,8 @@ interface Product {
     barcodeProduct: string,
     nameProduct: string,
     stockProduct: string,
-    priceProduct: string,
+    priceSellProduct: string,
+    priceBuyProduct: string,
     descriptionProduct: string,
     stateProduct: string
 }
@@ -87,17 +88,29 @@ const ProductList = () => {
     }
 
     const deleteProduct = (id: string) => {
-        const prepareData = {
-            Entry: {
-                value: id
-            },
-            spName: 'spDeleteProduct'
-        }
-        ipcRenderer.invoke('deleteproduct', prepareData)
-            .then(() => {
-                Alert('info', 'Se elimino correctamente')
-                getProducts()
-                setPage(0)
+        Swal.fire({
+            title: 'Estas seguro de eliminar el producto?',
+            text: "Esta accion no se puede revertir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, deseo eliminarlo!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                const prepareData = {
+                    Entry: {
+                        value: id
+                    },
+                    spName: 'spDeleteProduct'
+                }
+                ipcRenderer.invoke('deleteproduct', prepareData)
+                    .then(() => {
+                        Alert('info', 'Se elimino correctamente')
+                        getProducts()
+                        setPage(0)
+                    })
+                }
             })
     }
 
@@ -221,7 +234,8 @@ const ProductList = () => {
                                     <TableCell align="center">Nombre</TableCell>
                                     <TableCell align="center">Categoria</TableCell>
                                     <TableCell align="center">Stock</TableCell>
-                                    <TableCell align="center">Precio S/.</TableCell>
+                                    <TableCell align="center">Precio Venta</TableCell>
+                                    <TableCell align="center">Precio Compra</TableCell>
                                     <TableCell align="center">Notas</TableCell>
                                     <TableCell align="center">Estado</TableCell>
                                     {
@@ -244,21 +258,13 @@ const ProductList = () => {
                                         <TableCell align="center">{p.nameProduct}</TableCell>
                                         <TableCell align="center">{p.nameCategory}</TableCell>
                                         <TableCell align="center">{p.stockProduct}</TableCell>
-                                        <TableCell align="center">{p.priceProduct}</TableCell>
+                                        <TableCell align="center">{p.priceSellProduct}</TableCell>
+                                        <TableCell align="center">{p.priceBuyProduct}</TableCell>
                                         <TableCell align="center">{p.descriptionProduct ?
                                             p.descriptionProduct
                                             :
                                             'No hay notas'
-                                            /*<Chip
-                                                color="primary"
-                                                label="Si hay descripcion"
-                                                size="small"
-                                            /> :
-                                            <Chip
-                                                color="secondary"
-                                                label="No hay descripcion"
-                                                size="small"
-                                        />*/}
+                                            }
                                         </TableCell>
                                         <TableCell align="center">{p.stateProduct ?
                                             <Chip

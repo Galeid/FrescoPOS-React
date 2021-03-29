@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../../services/AuthContext';
-import logo from './logo.jpeg';
+import logo from './Logo3.png';
 //Icons
 import HomeIcon from '@material-ui/icons/Home';
 import LocalGroceryStoreIcon from '@material-ui/icons/LocalGroceryStore';
@@ -81,7 +81,7 @@ const SideBar = () => {
 
    return (
       <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.paperDrawer }} anchor="left">
-         <div >
+         <div style={{display:"flex", justifyContent:"center", alignItems:"center", padding:"10px"}}>
             <img src={logo} alt="logo" width="100%" height="150px" />            
          </div>
          {/*

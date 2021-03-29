@@ -85,6 +85,8 @@ const SalePage = () => {
    const classes = useStyles()
    const { user } = useContext(AuthContext)
 
+   const [discount, setDiscount] = useState(0)
+
    const [change, setChange] = useState(fillDecimals(0))
    const [cashPayment, setCashPayment] = useState(0)
    const [clientName, setClientName] = useState('')
@@ -162,6 +164,18 @@ const SalePage = () => {
       setSearchReason(reason)
       setSearchValue(value)
    }
+
+   const handleDiscount = (event: any, index: any) => {
+      setDiscount(event.target.value)
+   }
+
+   useEffect(() =>{
+      let disc = 0
+      for (let i = 0; i < saleData.length; i++) {
+         disc =  disc + saleData[i].amountProduct - ( saleData[i].amountProduct * (discount / 100))
+      }
+      setSubTotal(fillDecimals(round2Decimals(disc)))
+   }, [discount])
    
    const handleQuantityProduct = (event: any, index: any) => {
       let newSaleData = saleData.slice()
@@ -178,6 +192,7 @@ const SalePage = () => {
       
             newSaleData[index] = data
             setSaleData(newSaleData)
+            setDiscount(0)
          }
       }
    }
@@ -424,8 +439,9 @@ const SalePage = () => {
                                     <TableCell align="center">Item</TableCell>
                                     <TableCell align="center">Cantidad</TableCell>
                                     <TableCell align="center">Producto</TableCell>
-                                    <TableCell align="center">Precio</TableCell>
-                                    <TableCell align="center">Importe</TableCell>
+                                    <TableCell align="center">Precio Unidad</TableCell>
+                                    <TableCell align="center">Precio Venta</TableCell>
+                                    <TableCell align="center">Descuento %</TableCell>
                                     <TableCell align="center">Acciones</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -445,6 +461,15 @@ const SalePage = () => {
                                        <TableCell align="center">{p.nameProduct}</TableCell>
                                        <TableCell align="center">{p.priceProduct}</TableCell>
                                        <TableCell align="center">{p.amountProduct}</TableCell>
+                                       <TableCell align="center">
+                                          <TextField
+                                             label="Descuento"
+                                             value={discount}
+                                             type="number" 
+                                             onChange={(e) => handleDiscount(e, index)}
+                                             variant="outlined"
+                                             />
+                                       </TableCell>
                                        <TableCell align="center">
                                           <Button variant="contained" color="primary" onClick={() => deleteSaleProduct(index)}>DEL</Button>
                                        </TableCell>

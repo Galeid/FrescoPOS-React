@@ -192,7 +192,8 @@ const updateProductId = (event, args) => {
             args.Barcode.type = TYPES.NVarChar
             args.NameProduct.type = TYPES.NVarChar
             args.StockProduct.type = TYPES.NVarChar
-            args.PriceProduct.type = TYPES.NVarChar
+            args.PriceSellProduct.type = TYPES.NVarChar
+            args.PriceBuyProduct.type = TYPES.NVarChar
             args.DateProduct.type = TYPES.Date
             args.DescriptionProduct.type = TYPES.NVarChar
             args.StateProduct.type = TYPES.NVarChar
@@ -225,7 +226,8 @@ const insertProduct = (event, args) => {
             args.Barcode.type = TYPES.NVarChar
             args.NameProduct.type = TYPES.NVarChar
             args.StockProduct.type = TYPES.NVarChar
-            args.PriceProduct.type = TYPES.NVarChar
+            args.PriceSellProduct.type = TYPES.NVarChar
+            args.PriceBuyProduct.type = TYPES.NVarChar
             args.DateProduct.type = TYPES.Date
             args.DescriptionProduct.type = TYPES.NVarChar
             args.StateProduct.type = TYPES.NVarChar
