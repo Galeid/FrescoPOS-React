@@ -51,7 +51,8 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         barcodeProduct: '',
         nameProduct: '',
         stockProduct: '',
-        priceProduct: '',
+        priceSellProduct: '',
+        priceBuyProduct: '',
         dateProduct: '',
         descriptionProduct: '',
         stateProduct: ''
@@ -88,14 +89,15 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             Barcode: { value: productDB.barcodeProduct },
             NameProduct: { value: productDB.nameProduct },
             StockProduct: { value: productDB.stockProduct },
-            PriceProduct: { value: productDB.priceProduct },
+            PriceSellProduct: { value: productDB.priceSellProduct },
+            PriceBuyProduct: { value: productDB.priceBuyProduct },
             DateProduct: { value: registro },
             DescriptionProduct: { value: productDB.descriptionProduct === '' ? 'No hay notas' : productDB.descriptionProduct },
             StateProduct: { value: productDB.stateProduct },
             spName: 'spInsertProduct'
         }
 
-        if (productDB.nameProduct !== '' && productDB.priceProduct !== '' && productDB.stateProduct !== '') {
+        if (productDB.nameProduct !== '' && productDB.priceSellProduct !== '' && productDB.priceBuyProduct !== '' && productDB.stateProduct !== '') {
             ipcRenderer.invoke('insertproduct', prepareData)
                 .then(() => {
                     Alert('success', 'Se agrego el producto con exito')
@@ -115,7 +117,8 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             Barcode: { value: productDB.barcodeProduct },
             NameProduct: { value: productDB.nameProduct },
             StockProduct: { value: productDB.stockProduct },
-            PriceProduct: { value: productDB.priceProduct },
+            PriceSellProduct: { value: productDB.priceSellProduct },
+            PriceBuyProduct: { value: productDB.priceBuyProduct },
             DateProduct: { value: registro },
             DescriptionProduct: { value: productDB.descriptionProduct },
             StateProduct: { value: productDB.stateProduct },
@@ -126,6 +129,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             .then((product: any) => {
                 console.log(product)
                 Alert('success', 'Se han guardado los cambios con exito')
+                history.push('/products')
             }).catch((err: any) => console.log(err))
         //poenr alerta
     }
@@ -217,15 +221,29 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                             <TextField
                                 fullWidth
                                 required
-                                label="Precio"
+                                label="Precio Venta"
                                 className={classes.textField}
                                 onChange={handleChange}
-                                value={productDB.priceProduct || ''}
-                                name="priceProduct"
+                                value={productDB.priceSellProduct || ''}
+                                name="priceSellProduct"
                                 type={'number'}
                                 variant="outlined"
                             />
                         </Grid>
+                        <Grid item md={6} xs={12}>
+                            <TextField
+                                fullWidth
+                                required
+                                label="Precio Compra"
+                                className={classes.textField}
+                                onChange={handleChange}
+                                value={productDB.priceBuyProduct || ''}
+                                name="priceBuyProduct"
+                                type={'number'}
+                                variant="outlined"
+                            />
+                        </Grid>
+
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth

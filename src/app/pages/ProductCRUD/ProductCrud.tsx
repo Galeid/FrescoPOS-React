@@ -29,14 +29,6 @@ const ProductCrud = () => {
                     container
                     spacing={3}
                 >
-                    {/*<Grid
-                        item
-                        lg={4}
-                        md={6}
-                        xs={12}
-                    >
-                        <CardProduct />
-                    </Grid>*/}
                     <Grid
                         item
                         lg={12} //8
