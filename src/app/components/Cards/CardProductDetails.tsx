@@ -230,44 +230,29 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                 variant="outlined"
                             />
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                required
-                                label="Precio Compra"
-                                className={classes.textField}
-                                onChange={handleChange}
-                                value={productDB.priceBuyProduct || ''}
-                                name="priceBuyProduct"
-                                type={'number'}
-                                variant="outlined"
-                            />
-                        </Grid>
 
                         <Grid item md={6} xs={12}>
-                            <TextField
-                                fullWidth
-                                required
-                                label="Notas"
-                                onChange={handleChange}
-                                value={productDB.descriptionProduct || ''}
-                                placeholder={productDB.descriptionProduct || 'No hay notas'}
-                                name="descriptionProduct"
-                                variant="outlined"
-                                multiline
-                                rows={6}
-                                rowsMax={6}
-                            />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            <Grid container wrap="nowrap" spacing={2}>
-                                <Grid item xs={12}>
+                            <div style={{ paddingBottom: 10 }}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Precio Compra"
+                                    className={classes.textField}
+                                    onChange={handleChange}
+                                    value={productDB.priceBuyProduct || ''}
+                                    name="priceBuyProduct"
+                                    type={'number'}
+                                    variant="outlined"
+                                />
+                            </div>
+                            <Grid container spacing={3}>
+                                <Grid item xs={6}>
                                     <FormControl fullWidth>
                                         <InputLabel
                                             disableAnimation={false}
                                         >
                                             Estado
-                                        </InputLabel>
+                                            </InputLabel>
                                         <Select
                                             fullWidth
                                             required
@@ -290,15 +275,13 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                         <FormHelperText>Selecciona al menos una opcion</FormHelperText>
                                     </FormControl>
                                 </Grid>
-                            </Grid>
-                            <Grid container wrap="nowrap" spacing={2}>
-                                <Grid item xs={12}>
+                                <Grid item xs={6}>
                                     <FormControl fullWidth>
                                         <InputLabel
                                             disableAnimation={false}
                                         >
                                             Categoria
-                                        </InputLabel>
+                                            </InputLabel>
                                         <Select
                                             fullWidth
                                             required
@@ -316,6 +299,21 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                     </FormControl>
                                 </Grid>
                             </Grid>
+                        </Grid>
+                        <Grid item md={6} xs={12}>
+                            <TextField
+                                fullWidth
+                                required
+                                label="Notas"
+                                onChange={handleChange}
+                                value={productDB.descriptionProduct || ''}
+                                placeholder={productDB.descriptionProduct || 'No hay notas'}
+                                name="descriptionProduct"
+                                variant="outlined"
+                                multiline
+                                rows={6}
+                                rowsMax={6}
+                            />
                         </Grid>
                     </Grid>
                 </CardContent>
