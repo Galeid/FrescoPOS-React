@@ -16,7 +16,7 @@ interface Product {
    barcodeProduct: any,
    nameProduct: any,
    stockProduct: any,
-   priceProduct: any,
+   priceSellProduct: any,
    descriptionProduct: any,
    stateProduct: any
 }
@@ -25,7 +25,7 @@ interface SaleData {
    stockProduct: any,
    quantityProduct: any,
    nameProduct: any,
-   priceProduct: any,
+   priceSellProduct: any,
    amountProduct: any
 }
 let productsFromDB: Product[] = []
@@ -78,7 +78,8 @@ const useStyles = makeStyles({
    },
    fclabel: {
       fontSize: '0.9rem'
-   }
+   },
+   input: {},
 })
 
 const SalePage = () => {
@@ -120,8 +121,8 @@ const SalePage = () => {
             stockProduct: saleProducts[saleProducts.length - 1].stockProduct,
             quantityProduct: 1,
             nameProduct: saleProducts[saleProducts.length - 1].nameProduct,
-            priceProduct: saleProducts[saleProducts.length - 1].priceProduct,
-            amountProduct: round2Decimals(saleProducts[saleProducts.length - 1].priceProduct),
+            priceSellProduct: saleProducts[saleProducts.length - 1].priceSellProduct,
+            amountProduct: round2Decimals(saleProducts[saleProducts.length - 1].priceSellProduct),
          }
          let aux = [...saleData, newData]
          setSaleData(aux)
@@ -175,6 +176,7 @@ const SalePage = () => {
          disc =  disc + saleData[i].amountProduct - ( saleData[i].amountProduct * (discount / 100))
       }
       setSubTotal(fillDecimals(round2Decimals(disc)))
+      // eslint-disable-next-line
    }, [discount])
    
    const handleQuantityProduct = (event: any, index: any) => {
@@ -188,7 +190,7 @@ const SalePage = () => {
             event.target.value = 1
          } else {
             data.quantityProduct = Number(event.target.value)
-            data.amountProduct = round2Decimals(data.priceProduct * Number(event.target.value))
+            data.amountProduct = round2Decimals(data.priceSellProduct * Number(event.target.value))
       
             newSaleData[index] = data
             setSaleData(newSaleData)
@@ -261,7 +263,7 @@ const SalePage = () => {
 
       if (newQuantity <= data.stockProduct){
          data.quantityProduct = newQuantity
-         data.amountProduct = round2Decimals(data.priceProduct * newQuantity)
+         data.amountProduct = round2Decimals(data.priceSellProduct * newQuantity)
          newSaleData[exist] = data
          setSaleData(newSaleData)
       }
@@ -360,7 +362,7 @@ const SalePage = () => {
          Voucher: { value: saleVoucher },
          Date: { value: dateval },
          Qproduct: { value: qproductval },
-         Discount: { value: 0 },
+         Discount: { value: discount },
          Cash: { value: cashPayment },
          Tax: { value: Number(igv) },
          Subtotal: { value: Number(subTotal) },
@@ -459,7 +461,7 @@ const SalePage = () => {
                                           />
                                        </TableCell>
                                        <TableCell align="center">{p.nameProduct}</TableCell>
-                                       <TableCell align="center">{p.priceProduct}</TableCell>
+                                       <TableCell align="center">{p.priceSellProduct}</TableCell>
                                        <TableCell align="center">{p.amountProduct}</TableCell>
                                        <TableCell align="center">
                                           <TextField
