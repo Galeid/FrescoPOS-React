@@ -402,6 +402,28 @@ const deleteCategory = (event, args) => {
     })
 }
 
+const getSales = (event,args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
+const getOrders = (event,args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -423,3 +445,5 @@ ipcMain.handle('searchidcategory', searchIdCategory)
 ipcMain.handle('insertcategory', insertCategory)
 ipcMain.handle('updatecategoryid', updateCategoryId)
 ipcMain.handle('deletecategory', deleteCategory)
+ipcMain.handle('getsales', getSales)
+ipcMain.handle('getorders', getOrders)
