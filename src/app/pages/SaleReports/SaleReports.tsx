@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 import {
    Grid, Card, CardContent, Button, Table,
    TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import { AuthContext } from '../../../services/AuthContext'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -47,8 +48,20 @@ let orderDataOrigin = {
    orderDiscount: '-',
 }
 
+const round2Decimals = (num: any) => {
+   return Math.round((num + Number.EPSILON) * 100) / 100
+}
+
+const convertDateString = (saleDate: Date) => {
+   let date = saleDate,
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+   return [day, mnth, date.getFullYear()].join("/");
+}
+
 const SaleReports = () => {
    const classes = useStyles()
+   const { user } = useContext(AuthContext)
 
    const [salesDB, setSalesDB] = useState(salesFromDB)
    const [orderDB, setOrderDB] = useState(orderFromDB)
@@ -56,9 +69,14 @@ const SaleReports = () => {
    const [dateFrom, setDateFrom] = useState(new Date())
    const [dateTo, setDateTo] = useState(new Date())
    const [revenueSales, setRevenueSales] = useState(0)
-   const [isSending, setIsSending] = useState(false)
+   const [taxSales, setTaxSales] = useState(0)
    const [pdfInfo, setPdfInfo] = useState({
-      revenue: 0,
+      revenue: revenueSales, //ingresos
+      tax: taxSales,         //impuestos
+      sales: salesDB,        //ventas
+      dateFrom: convertDateString(dateFrom),//dia
+      dateTo: convertDateString(dateTo),//noche
+      user: user.nameUser,//user
    })
 
    useEffect(() => {
@@ -66,20 +84,39 @@ const SaleReports = () => {
       // eslint-disable-next-line
    }, [])
 
-   const convertDateString = (saleDate: Date) => {
-      let date = saleDate,
-         mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-         day = ("0" + date.getDate()).slice(-2);
-      return [day, mnth, date.getFullYear()].join("/");
-   }
+   useEffect(() => {
+      console.log(pdfInfo)
+      // eslint-disable-next-line
+   }, [pdfInfo])
 
-   const setSalesTableData = (sales: any) => {
+   const setSalesTableData = (sales: any, tos: string) => {
       let newNum = 0
+      let newTax = 0
       for (let i = 0; i < sales.length; i++) {
          newNum = newNum + sales[i].subtotalSale;
+         newTax =+ sales[i].taxSale;
       }
-      setRevenueSales(newNum)
+      setRevenueSales(round2Decimals(newNum))
+      setTaxSales(round2Decimals(newTax))
       setSalesDB(sales)
+
+      if (tos === 'all') {
+         setPdfInfo({ ...pdfInfo,
+            revenue: newNum,
+            tax: newTax,
+            sales: sales,
+            dateFrom: '-/-/-',
+            dateTo: '-/-/-',
+         })
+      }else if (tos === 'date') {
+         setPdfInfo({ ...pdfInfo,
+            revenue: newNum,
+            tax: newTax,
+            sales: sales,
+            dateFrom: convertDateString(dateFrom),
+            dateTo: convertDateString(dateTo),
+         })
+      }
    }
 
    const resetOrders = () => {
@@ -93,7 +130,7 @@ const SaleReports = () => {
       }
       ipcRenderer.invoke('getsales', prepareData)
          .then((sales: any) => {
-            setSalesTableData(sales)
+            setSalesTableData(sales, 'all')
             resetOrders()
          })
    }
@@ -125,22 +162,11 @@ const SaleReports = () => {
       }
       ipcRenderer.invoke('searchsales', prepareData)
          .then((sales: any) => {
-            setSalesTableData(sales)
+            setSalesTableData(sales, 'date')
             resetOrders()
          })
    }
 
-   useEffect(() => {
-      setPdfInfo({
-         revenue: revenueSales
-      })
-      console.log(pdfInfo)
-      setIsSending(false)
-   },[isSending])
-   
-   const sendRequest = () =>{
-      setIsSending(true)
-   }
 
    return (
       <>
@@ -173,18 +199,14 @@ const SaleReports = () => {
                         <Button variant="contained" color="primary" onClick={searchSalesDate}>Buscar por fecha</Button>
                      </Grid>
                      <Grid item xs={3}>
-                        <Button
-                           variant="contained"
-                           color="primary"
-                           onClick={sendRequest}
-                           >
-                           <PDFDownloadLink 
-                              document={<MyDocumentViewer info={pdfInfo} />} 
-                              fileName="somename.pdf"
-                              style={{color: 'white', textDecoration: 'none'}}>
-                                 {({ blob, url, loading, error }) => (loading ? 'Cargando documento...' : 'Generar Reporte')}
-                           </PDFDownloadLink>
-                        </Button>
+                        <PDFDownloadLink 
+                        document={<MyDocumentViewer info={pdfInfo} />} 
+                        fileName="somename.pdf"
+                        style={{color: 'white', textDecoration: 'none'}}>
+                           {({ blob, url, loading, error }) => (loading ? 
+                           <Button variant="contained" color="primary" >Cargando documento...</Button> 
+                           : <Button variant="contained" color="primary" >Generar Reporte</Button>)}
+                        </PDFDownloadLink>
                      </Grid>
                   </Grid>
                </MuiPickersUtilsProvider>
@@ -229,7 +251,7 @@ const SaleReports = () => {
                <Card className={classes.root} style={{ marginBottom: '8px' }}>
                   <CardContent>
                      <Typography variant="h6">Ingresos:</Typography>
-                     <Typography variant="subtitle2" align="center">S/ {revenueSales}</Typography>
+                     <Typography variant="subtitle1" align="center">S/ {revenueSales} (+{taxSales} de impuestos)</Typography>
                   </CardContent>
                </Card>
                <Card className={classes.root}>
@@ -265,36 +287,159 @@ const SaleReports = () => {
                </Card>
             </Grid>
          </Grid>
-         {/*<MyDocumentViewer info={pdfInfo}/>*/}
       </>
    )
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------
 const styles = StyleSheet.create({
    page: {
-      flexDirection: 'row',
+      padding: 60,
       backgroundColor: '#E4E4E4'
    },
+   pageSection: {
+      flexDirection: "row"
+   },
    section: {
-      margin: 10,
-      padding: 10,
-      flexGrow: 1
+      margin: 5,
+      padding: 5,
+   },
+   tableStyle: {
+      display: "table",
+      width: "auto"
+   },
+   tableRowStyle: {
+      flexDirection: "row"
+   },
+   firstTableColHeaderStyle: {
+      width: "20%",
+      borderStyle: "solid",
+      borderColor: "#000",
+      borderBottomColor: "#000",
+      borderWidth: 1,
+      backgroundColor: "#bdbdbd"
+   },
+   tableColHeaderStyle: {
+      width: "20%",
+      borderStyle: "solid",
+      borderColor: "#000",
+      borderBottomColor: "#000",
+      borderWidth: 1,
+      borderLeftWidth: 0,
+      backgroundColor: "#bdbdbd"
+   },
+   firstTableColStyle: {
+      width: "20%",
+      borderStyle: "solid",
+      borderColor: "#000",
+      borderWidth: 1,
+      borderTopWidth: 0
+   },
+   tableColStyle: {
+      width: "20%",
+      borderStyle: "solid",
+      borderColor: "#000",
+      borderWidth: 1,
+      borderLeftWidth: 0,
+      borderTopWidth: 0
+   },
+   tableCellHeaderStyle: {
+      textAlign: "center",
+      margin: 4,
+      fontSize: 12,
+      fontWeight: "bold"
+   },
+   tableCellStyle: {
+      textAlign: "center",
+      margin: 5,
+      fontSize: 10
    }
 });
 
-const MyDocumentViewer = (props: {info: any}) => (
-   <Document>
-      <Page size="A4" style={styles.page}>
-         <View style={styles.section}>
-            <Text>Section #1</Text>
+const MyDocumentViewer = (props: { info: any }) => {
+   return useMemo(() => (
+      <Document >
+         <Page size="A4" style={styles.page} orientation="portrait">
+            <View style={styles.section}>
+               <Text>Reporte de: Fecha a Fecha</Text>
+            </View>
+            <View style={styles.pageSection} >
+               <View style={styles.section}>
+                  <Text>Productos Vendidos: </Text>
+               </View>
+               <View style={styles.section}>
+                  <Text>Ingresos Totales: {props.info.revenue}</Text>
+               </View>
+            </View>
+            <View style={styles.tableStyle}>
+               {createTableHeader()}
+               {createTableRow()}
+               {createTableRow()}
+               {createTableRow()}
+               {createTableRow()}
+               {createTableRow()}
+            </View>
+         </Page>
+      </Document>
+   ), [props])
+};
+/*React.memo(function MyComponent (props) {
+   return !LOADING
+ })*/
+
+const createTableHeader = () => {
+   return (
+      <View style={styles.tableRowStyle} fixed>
+
+         <View style={styles.firstTableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Producto</Text>
          </View>
-         <View style={styles.section}>
-            <Text>Section #2</Text>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Cantidad</Text>
          </View>
-         <View style={styles.section}>
-            <Text>Ingresos: {props.info.revenue}</Text>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Precio</Text>
          </View>
-      </Page>
-   </Document>
-);
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Pago</Text>
+         </View>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Fecha</Text>
+         </View>
+      </View>
+   );
+};
+
+const createTableRow = () => {
+   return (
+      <View style={styles.tableRowStyle}>
+
+         <View style={styles.firstTableColStyle}>
+            <Text style={styles.tableCellStyle}>Element</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>Element</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>Element</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>Element</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>Element</Text>
+         </View>
+
+      </View>
+   );
+};
+
 export default SaleReports
