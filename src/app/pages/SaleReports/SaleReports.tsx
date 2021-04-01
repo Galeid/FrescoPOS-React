@@ -54,9 +54,9 @@ const round2Decimals = (num: any) => {
 
 const convertDateString = (saleDate: Date) => {
    let date = saleDate,
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-   return [day, mnth, date.getFullYear()].join("/");
+      mnth = ("0" + (date.getUTCMonth() + 1)).slice(-2),
+      day = ("0" + date.getUTCDate()).slice(-2);
+   return [day, mnth, date.getUTCFullYear()].join("/");
 }
 
 const SaleReports = () => {
@@ -66,8 +66,8 @@ const SaleReports = () => {
    const [salesDB, setSalesDB] = useState(salesFromDB)
    const [orderDB, setOrderDB] = useState(orderFromDB)
    const [orderData, setOrderData] = useState(orderDataOrigin)
-   const [dateFrom, setDateFrom] = useState(new Date())
-   const [dateTo, setDateTo] = useState(new Date())
+   const [dateFrom, setDateFrom] = useState(new Date(new Date().setHours(0,0,0,0)))
+   const [dateTo, setDateTo] = useState(new Date(new Date().setHours(0,0,0,0)))
    const [revenueSales, setRevenueSales] = useState(0)
    const [taxSales, setTaxSales] = useState(0)
    const [pdfInfo, setPdfInfo] = useState({
@@ -155,6 +155,8 @@ const SaleReports = () => {
    }
 
    const searchSalesDate = () => {
+      console.log(dateFrom)
+      console.log(dateTo)
       const prepareData = {
          Datefrom: { value: dateFrom },
          Dateto: { value: dateTo },
@@ -182,7 +184,11 @@ const SaleReports = () => {
                            margin="normal"
                            label="Desde la fecha:"
                            value={dateFrom}
-                           onChange={date => setDateFrom(date as Date)}
+                           onChange={date => {
+                              let ndate = date as Date
+                              ndate.setHours(0,0,0,0)
+                              setDateFrom(ndate as Date)
+                           }}
                            format="dd/MM/yyyy"
                         />
                      </Grid>
@@ -191,7 +197,11 @@ const SaleReports = () => {
                            margin="normal"
                            label="Hasta la fecha:"
                            value={dateTo}
-                           onChange={date => setDateTo(date as Date)}
+                           onChange={date => {
+                              let ndate = date as Date
+                              ndate.setHours(0,0,0,0)
+                              setDateTo(ndate as Date)
+                           }}
                            format="dd/MM/yyyy"
                         />
                      </Grid>
