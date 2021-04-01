@@ -59,6 +59,11 @@ const convertDateString = (saleDate: Date) => {
    return [day, mnth, date.getUTCFullYear()].join("/");
 }
 
+const getTodayDate = () => {
+   let event = new Date()
+   return event.toString().slice(4, 24)
+}
+
 const SaleReports = () => {
    const classes = useStyles()
    const { user } = useContext(AuthContext)
@@ -155,8 +160,6 @@ const SaleReports = () => {
    }
 
    const searchSalesDate = () => {
-      console.log(dateFrom)
-      console.log(dateTo)
       const prepareData = {
          Datefrom: { value: dateFrom },
          Dateto: { value: dateTo },
@@ -211,7 +214,7 @@ const SaleReports = () => {
                      <Grid item xs={3}>
                         <PDFDownloadLink 
                         document={<MyDocumentViewer info={pdfInfo} />} 
-                        fileName="somename.pdf"
+                        fileName={getTodayDate() + " reporte ventas.pdf"}
                         style={{color: 'white', textDecoration: 'none'}}>
                            {({ blob, url, loading, error }) => (loading ? 
                            <Button variant="contained" color="primary" >Cargando documento...</Button> 
@@ -371,7 +374,7 @@ const MyDocumentViewer = (props: { info: any }) => {
       <Document >
          <Page size="A4" style={styles.page} orientation="portrait">
             <View style={styles.section}>
-               <Text>Reporte de: Fecha a Fecha</Text>
+               <Text>Reporte del {props.info.dateFrom} a {props.info.dateTo} </Text>
             </View>
             <View style={styles.pageSection} >
                <View style={styles.section}>
@@ -393,9 +396,6 @@ const MyDocumentViewer = (props: { info: any }) => {
       </Document>
    ), [props])
 };
-/*React.memo(function MyComponent (props) {
-   return !LOADING
- })*/
 
 const createTableHeader = () => {
    return (
