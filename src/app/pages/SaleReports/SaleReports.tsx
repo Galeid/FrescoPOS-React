@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Grid, Card, CardContent, Button, Table, 
-   TableBody, TableCell, TableContainer, TableHead, TableRow, 
-   Typography, Divider } from '@material-ui/core'
+import {
+   Grid, Card, CardContent, Button, Table,
+   TableBody, TableCell, TableContainer, TableHead, TableRow,
+   Typography, Divider
+} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import { KeyboardDatePicker, MuiPickersUtilsProvider  } from '@material-ui/pickers';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 
 const { ipcRenderer } = window.require('electron')
 
@@ -34,7 +37,6 @@ interface Order {
    nameProduct: string,
    priceSellProduct: string,
 }
-
 let salesFromDB: Sales[] = []
 let orderFromDB: Order[] = []
 let orderDataOrigin = {
@@ -54,6 +56,10 @@ const SaleReports = () => {
    const [dateFrom, setDateFrom] = useState(new Date())
    const [dateTo, setDateTo] = useState(new Date())
    const [revenueSales, setRevenueSales] = useState(0)
+   const [isSending, setIsSending] = useState(false)
+   const [pdfInfo, setPdfInfo] = useState({
+      revenue: 0,
+   })
 
    useEffect(() => {
       getSales()
@@ -62,8 +68,8 @@ const SaleReports = () => {
 
    const convertDateString = (saleDate: Date) => {
       let date = saleDate,
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
+         mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+         day = ("0" + date.getDate()).slice(-2);
       return [day, mnth, date.getFullYear()].join("/");
    }
 
@@ -124,118 +130,171 @@ const SaleReports = () => {
          })
    }
 
+   useEffect(() => {
+      setPdfInfo({
+         revenue: revenueSales
+      })
+      console.log(pdfInfo)
+      setIsSending(false)
+   },[isSending])
+   
+   const sendRequest = () =>{
+      setIsSending(true)
+   }
+
    return (
       <>
-      <Card className={classes.root}>
-         <CardContent>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-               <Grid container spacing={1} alignContent="center" alignItems="center">
-                  <Grid item xs={3}>
-                     <Button variant="contained" color="primary" onClick={getSales}>Todas las Ventas</Button>
+         <Card className={classes.root}>
+            <CardContent>
+               <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <Grid container spacing={1} alignContent="center" alignItems="center">
+                     <Grid item xs={3}>
+                        <Button variant="contained" color="primary" onClick={getSales}>Todas las Ventas</Button>
+                     </Grid>
+                     <Grid item xs={3}>
+                        <KeyboardDatePicker
+                           margin="normal"
+                           label="Desde la fecha:"
+                           value={dateFrom}
+                           onChange={date => setDateFrom(date as Date)}
+                           format="dd/MM/yyyy"
+                        />
+                     </Grid>
+                     <Grid item xs={3}>
+                        <KeyboardDatePicker
+                           margin="normal"
+                           label="Hasta la fecha:"
+                           value={dateTo}
+                           onChange={date => setDateTo(date as Date)}
+                           format="dd/MM/yyyy"
+                        />
+                     </Grid>
+                     <Grid item xs={3}>
+                        <Button variant="contained" color="primary" onClick={searchSalesDate}>Buscar por fecha</Button>
+                     </Grid>
+                     <Grid item xs={3}>
+                        <Button
+                           variant="contained"
+                           color="primary"
+                           onClick={sendRequest}
+                           >
+                           <PDFDownloadLink 
+                              document={<MyDocumentViewer info={pdfInfo} />} 
+                              fileName="somename.pdf"
+                              style={{color: 'white', textDecoration: 'none'}}>
+                                 {({ blob, url, loading, error }) => (loading ? 'Cargando documento...' : 'Generar Reporte')}
+                           </PDFDownloadLink>
+                        </Button>
+                     </Grid>
                   </Grid>
-                  <Grid item xs={3}>
-                     <KeyboardDatePicker
-                        margin="normal"
-                        label="Desde la fecha:"
-                        value={dateFrom}
-                        onChange={date => setDateFrom(date as Date)}
-                        format="dd/MM/yyyy"
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <KeyboardDatePicker
-                        margin="normal"
-                        label="Hasta la fecha:"
-                        value={dateTo}
-                        onChange={date => setDateTo(date as Date)}
-                        format="dd/MM/yyyy"
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <Button variant="contained" color="primary" onClick={searchSalesDate}>Buscar por fecha</Button>
-                  </Grid>
-               </Grid>
-            </MuiPickersUtilsProvider>
-         </CardContent>
-      </Card>
-
-      <Grid container spacing={1}>
-         <Grid item xs={8}>
-            <Card className={classes.root}>
-               <CardContent>
-                  <TableContainer>
-                     <Table>
-                        <TableHead>
-                           <TableRow>
-                              <TableCell align="center">Id</TableCell>
-                              <TableCell align="center">Cliente</TableCell>
-                              <TableCell align="center">N° Productos</TableCell>
-                              <TableCell align="center">Voucher</TableCell>
-                              <TableCell align="center">Total</TableCell>
-                              <TableCell align="center">Impuestos</TableCell>
-                              <TableCell align="center">Fecha</TableCell>
-                           </TableRow>
-                        </TableHead>
-                        <TableBody>
-                           {salesDB.map((s, index) => (
-                              <TableRow hover key={index} onClick={() => getOrder(s)}>
-                                 <TableCell align="center">{s.idSale}</TableCell>
-                                 <TableCell align="center">{s.nameclientSale}</TableCell>
-                                 <TableCell align="center">{s.qproductsSale}</TableCell>
-                                 <TableCell align="center">{s.voucherSale}</TableCell>
-                                 <TableCell align="center">S/ {s.subtotalSale}</TableCell>
-                                 <TableCell align="center">S/ {s.taxSale}</TableCell>
-                                 <TableCell align="center">{convertDateString(s.dateSale)}</TableCell>
+               </MuiPickersUtilsProvider>
+            </CardContent>
+         </Card>
+         <Grid container spacing={1}>
+            <Grid item xs={8}>
+               <Card className={classes.root}>
+                  <CardContent>
+                     <TableContainer>
+                        <Table>
+                           <TableHead>
+                              <TableRow>
+                                 <TableCell align="center">Id</TableCell>
+                                 <TableCell align="center">Cliente</TableCell>
+                                 <TableCell align="center">N° Productos</TableCell>
+                                 <TableCell align="center">Voucher</TableCell>
+                                 <TableCell align="center">Total</TableCell>
+                                 <TableCell align="center">Impuestos</TableCell>
+                                 <TableCell align="center">Fecha</TableCell>
                               </TableRow>
-                           ))}
-                        </TableBody>
-                     </Table>
-                  </TableContainer>
-               </CardContent>
-            </Card>
-         </Grid>
-         <Grid item xs={4}>
-            <Card className={classes.root} style={{marginBottom: '8px'}}>
-               <CardContent>
-                  <Typography variant="h6">Ingresos:</Typography>
-                  <Typography variant="subtitle2" align="center">S/ {revenueSales}</Typography>
-               </CardContent>
-            </Card>
-            <Card className={classes.root}>
-               <CardContent>
-                  <Typography variant="h6">Código de la Venta: {orderData.orderCode}</Typography>
-                  <Typography variant="subtitle2">Vendedor: {orderData.orderUser}</Typography>
-                  <Typography variant="subtitle2">Metodo de Pago: {orderData.orderWay}</Typography>
-                  <Typography variant="subtitle2">Descuento: {orderData.orderDiscount}</Typography>
-                  <Typography variant="subtitle2" style={{marginBottom:'8px'}}>Estado: {orderData.orderState}</Typography>
-                  <Divider/>
-                  <Typography variant="h6" style={{marginTop:'8px'}}>Lista de Productos:</Typography>
-                  <TableContainer>
-                     <Table>
-                        <TableHead>
-                           <TableRow>
-                              <TableCell align="center">Nombre</TableCell>
-                              <TableCell align="center">Cant.</TableCell>
-                              <TableCell align="center">Precio</TableCell>
-                           </TableRow>
-                        </TableHead>
-                        <TableBody>
-                           {orderDB.map((s, index) => (
-                              <TableRow key={index}>
-                                 <TableCell align="center">{s.nameProduct}</TableCell>
-                                 <TableCell align="center">{s.quantityOrder}</TableCell>
-                                 <TableCell align="center">S/ {s.priceSellProduct}</TableCell>
+                           </TableHead>
+                           <TableBody>
+                              {salesDB.map((s, index) => (
+                                 <TableRow hover key={index} onClick={() => getOrder(s)}>
+                                    <TableCell align="center">{s.idSale}</TableCell>
+                                    <TableCell align="center">{s.nameclientSale}</TableCell>
+                                    <TableCell align="center">{s.qproductsSale}</TableCell>
+                                    <TableCell align="center">{s.voucherSale}</TableCell>
+                                    <TableCell align="center">S/ {s.subtotalSale}</TableCell>
+                                    <TableCell align="center">S/ {s.taxSale}</TableCell>
+                                    <TableCell align="center">{convertDateString(s.dateSale)}</TableCell>
+                                 </TableRow>
+                              ))}
+                           </TableBody>
+                        </Table>
+                     </TableContainer>
+                  </CardContent>
+               </Card>
+            </Grid>
+            <Grid item xs={4}>
+               <Card className={classes.root} style={{ marginBottom: '8px' }}>
+                  <CardContent>
+                     <Typography variant="h6">Ingresos:</Typography>
+                     <Typography variant="subtitle2" align="center">S/ {revenueSales}</Typography>
+                  </CardContent>
+               </Card>
+               <Card className={classes.root}>
+                  <CardContent>
+                     <Typography variant="h6">Código de la Venta: {orderData.orderCode}</Typography>
+                     <Typography variant="subtitle2">Vendedor: {orderData.orderUser}</Typography>
+                     <Typography variant="subtitle2">Metodo de Pago: {orderData.orderWay}</Typography>
+                     <Typography variant="subtitle2">Descuento: {orderData.orderDiscount}</Typography>
+                     <Typography variant="subtitle2" style={{ marginBottom: '8px' }}>Estado: {orderData.orderState}</Typography>
+                     <Divider />
+                     <Typography variant="h6" style={{ marginTop: '8px' }}>Lista de Productos:</Typography>
+                     <TableContainer>
+                        <Table>
+                           <TableHead>
+                              <TableRow>
+                                 <TableCell align="center">Nombre</TableCell>
+                                 <TableCell align="center">Cant.</TableCell>
+                                 <TableCell align="center">Precio</TableCell>
                               </TableRow>
-                           ))}
-                        </TableBody>
-                     </Table>
-                  </TableContainer>
-               </CardContent>
-            </Card>
+                           </TableHead>
+                           <TableBody>
+                              {orderDB.map((s, index) => (
+                                 <TableRow key={index}>
+                                    <TableCell align="center">{s.nameProduct}</TableCell>
+                                    <TableCell align="center">{s.quantityOrder}</TableCell>
+                                    <TableCell align="center">S/ {s.priceSellProduct}</TableCell>
+                                 </TableRow>
+                              ))}
+                           </TableBody>
+                        </Table>
+                     </TableContainer>
+                  </CardContent>
+               </Card>
+            </Grid>
          </Grid>
-      </Grid>
+         {/*<MyDocumentViewer info={pdfInfo}/>*/}
       </>
    )
 }
 
+const styles = StyleSheet.create({
+   page: {
+      flexDirection: 'row',
+      backgroundColor: '#E4E4E4'
+   },
+   section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1
+   }
+});
+
+const MyDocumentViewer = (props: {info: any}) => (
+   <Document>
+      <Page size="A4" style={styles.page}>
+         <View style={styles.section}>
+            <Text>Section #1</Text>
+         </View>
+         <View style={styles.section}>
+            <Text>Section #2</Text>
+         </View>
+         <View style={styles.section}>
+            <Text>Ingresos: {props.info.revenue}</Text>
+         </View>
+      </Page>
+   </Document>
+);
 export default SaleReports
