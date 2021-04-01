@@ -413,10 +413,24 @@ const getSales = (event,args) => {
     })
 }
 
-const getOrders = (event,args) => {
+const getOrders = (event, args) => {
     return new Promise((resolve, reject) => {
         connectToServer()
             .then(connection => {
+                args.Entry.type = TYPES.Int
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
+const searchSales = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Datefrom.type = TYPES.Date
+                args.Dateto.type = TYPES.Date
                 return readDB(connection, args)
             })
             .then(sales => resolve(sales))
@@ -447,3 +461,4 @@ ipcMain.handle('updatecategoryid', updateCategoryId)
 ipcMain.handle('deletecategory', deleteCategory)
 ipcMain.handle('getsales', getSales)
 ipcMain.handle('getorders', getOrders)
+ipcMain.handle('searchsales', searchSales)
