@@ -61,7 +61,7 @@ const DateTime = () => {
 
    return (
       <div className={classes.center}>
-         <QueryBuilder className={classes.itemIcon} /> {dayTime} <CalendarToday className={classes.itemIcon} /> {dayDate}
+         <CalendarToday className={classes.itemIcon} /> {dayDate} <QueryBuilder className={classes.itemIcon} /> {dayTime}
       </div>
    )
 }

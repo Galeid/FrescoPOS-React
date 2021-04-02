@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react'
 import {
    Grid, Card, CardContent, Button, Table,
    TableBody, TableCell, TableContainer, TableHead, TableRow,
-   Typography, Divider
+   Typography, Divider, FormGroup, FormControlLabel, Checkbox
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -75,13 +75,17 @@ const SaleReports = () => {
    const [dateTo, setDateTo] = useState(new Date(new Date().setHours(0,0,0,0)))
    const [revenueSales, setRevenueSales] = useState(0)
    const [taxSales, setTaxSales] = useState(0)
+   const [isReadyPdf, setIsReadyPdf] = useState(false)
+   const [detailedPdf, setDetailedPdf] = useState(false)
    const [pdfInfo, setPdfInfo] = useState({
-      revenue: revenueSales, //ingresos
-      tax: taxSales,         //impuestos
-      sales: salesDB,        //ventas
-      dateFrom: convertDateString(dateFrom),//dia
-      dateTo: convertDateString(dateTo),//noche
-      user: user.nameUser,//user
+      tax: taxSales,
+      revenue: revenueSales,
+      sales: salesDB,        
+      dateFrom: convertDateString(dateFrom),
+      dateTo: convertDateString(dateTo),
+      user: user.nameUser,
+      detailed: false,
+      quantityProducts: 0
    })
 
    useEffect(() => {
@@ -94,12 +98,20 @@ const SaleReports = () => {
       // eslint-disable-next-line
    }, [pdfInfo])
 
+   useEffect(() => {
+      setPdfInfo({...pdfInfo,
+         detailed: detailedPdf,
+      })
+   }, [detailedPdf])
+   
    const setSalesTableData = (sales: any, tos: string) => {
       let newNum = 0
       let newTax = 0
+      let qp = 0
       for (let i = 0; i < sales.length; i++) {
          newNum = newNum + sales[i].subtotalSale;
-         newTax =+ sales[i].taxSale;
+         newTax = newTax + sales[i].taxSale;
+         qp = qp + sales[i].qproductsSale;
       }
       setRevenueSales(round2Decimals(newNum))
       setTaxSales(round2Decimals(newTax))
@@ -110,8 +122,9 @@ const SaleReports = () => {
             revenue: newNum,
             tax: newTax,
             sales: sales,
-            dateFrom: '-/-/-',
-            dateTo: '-/-/-',
+            dateFrom: 'el inicio',
+            dateTo: 'el final',
+            quantityProducts: qp,
          })
       }else if (tos === 'date') {
          setPdfInfo({ ...pdfInfo,
@@ -120,6 +133,7 @@ const SaleReports = () => {
             sales: sales,
             dateFrom: convertDateString(dateFrom),
             dateTo: convertDateString(dateTo),
+            quantityProducts: qp,
          })
       }
    }
@@ -178,9 +192,10 @@ const SaleReports = () => {
          <Card className={classes.root}>
             <CardContent>
                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Grid container spacing={1} alignContent="center" alignItems="center">
+                  <Grid container spacing={4} alignContent="center" alignItems="center">
                      <Grid item xs={3}>
-                        <Button variant="contained" color="primary" onClick={getSales}>Todas las Ventas</Button>
+                        <Button fullWidth variant="contained" color="primary" onClick={getSales} style={{marginBottom:'8px'}}>Todas las Ventas</Button>
+                        <Button fullWidth variant="contained" color="primary" onClick={searchSalesDate}>Buscar por fecha</Button>
                      </Grid>
                      <Grid item xs={3}>
                         <KeyboardDatePicker
@@ -209,17 +224,31 @@ const SaleReports = () => {
                         />
                      </Grid>
                      <Grid item xs={3}>
-                        <Button variant="contained" color="primary" onClick={searchSalesDate}>Buscar por fecha</Button>
-                     </Grid>
-                     <Grid item xs={3}>
-                        <PDFDownloadLink 
-                        document={<MyDocumentViewer info={pdfInfo} />} 
-                        fileName={getTodayDate() + " reporte ventas.pdf"}
-                        style={{color: 'white', textDecoration: 'none'}}>
-                           {({ blob, url, loading, error }) => (loading ? 
-                           <Button variant="contained" color="primary" >Cargando documento...</Button> 
-                           : <Button variant="contained" color="primary" >Generar Reporte</Button>)}
-                        </PDFDownloadLink>
+                        {isReadyPdf ?
+                           <PDFDownloadLink 
+                           key={Math.random()}
+                           document={<MyDocumentViewer info={pdfInfo} />} 
+                           fileName={getTodayDate() + " reporte ventas.pdf"}
+                           style={{color: 'white', textDecoration: 'none'}}>
+                              {({ blob, url, loading, error }) => (loading ? 
+                              <Button fullWidth variant="contained" color="secondary" style={{marginBottom:'8px'}}>Cargando documento...</Button> 
+                              : <Button fullWidth variant="contained" color="secondary" onClick={() => setIsReadyPdf(!isReadyPdf)} style={{marginBottom:'8px'}}>Generar PDF</Button>)}
+                           </PDFDownloadLink>
+                           :
+                           <Button fullWidth variant="contained" color="secondary" onClick={() => setIsReadyPdf(!isReadyPdf)} style={{marginBottom:'8px'}}>Preparar PDF</Button> 
+                        }
+                        {/* {<FormGroup>
+                           <FormControlLabel
+                              control={
+                                 <Checkbox
+                                    checked={detailedPdf}
+                                    onChange={() => setDetailedPdf(!detailedPdf)}
+                                    color="primary"
+                                 />
+                              }
+                              label="Detallado?"
+                           />
+                        </FormGroup> */}
                      </Grid>
                   </Grid>
                </MuiPickersUtilsProvider>
@@ -307,11 +336,14 @@ const SaleReports = () => {
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 const styles = StyleSheet.create({
    page: {
-      padding: 60,
+      padding: 30,
       backgroundColor: '#E4E4E4'
    },
    pageSection: {
       flexDirection: "row"
+   },
+   tableSection: {
+      width: "536px"
    },
    section: {
       margin: 5,
@@ -325,7 +357,7 @@ const styles = StyleSheet.create({
       flexDirection: "row"
    },
    firstTableColHeaderStyle: {
-      width: "20%",
+      width: "26.78px",
       borderStyle: "solid",
       borderColor: "#000",
       borderBottomColor: "#000",
@@ -333,7 +365,7 @@ const styles = StyleSheet.create({
       backgroundColor: "#bdbdbd"
    },
    tableColHeaderStyle: {
-      width: "20%",
+      width: "56.58px",
       borderStyle: "solid",
       borderColor: "#000",
       borderBottomColor: "#000",
@@ -342,14 +374,14 @@ const styles = StyleSheet.create({
       backgroundColor: "#bdbdbd"
    },
    firstTableColStyle: {
-      width: "20%",
+      width: "26.78px",
       borderStyle: "solid",
       borderColor: "#000",
       borderWidth: 1,
       borderTopWidth: 0
    },
    tableColStyle: {
-      width: "20%",
+      width: "56.58px",
       borderStyle: "solid",
       borderColor: "#000",
       borderWidth: 1,
@@ -370,27 +402,36 @@ const styles = StyleSheet.create({
 });
 
 const MyDocumentViewer = (props: { info: any }) => {
+   
+   const [arrSales, setArrSales] = useState(salesFromDB)
+   useEffect(() => {
+      const newArrSales = props.info.sales.slice()
+      console.log(newArrSales)
+      setArrSales(newArrSales)
+   }, [])
+
    return useMemo(() => (
-      <Document >
+      <Document>
          <Page size="A4" style={styles.page} orientation="portrait">
+         <View style={styles.section}>
+               <Text>Generado por {props.info.user}</Text>
+            </View>
             <View style={styles.section}>
-               <Text>Reporte del {props.info.dateFrom} a {props.info.dateTo} </Text>
+               <Text>Reporte desde {props.info.dateFrom} hasta {props.info.dateTo} </Text>
             </View>
             <View style={styles.pageSection} >
                <View style={styles.section}>
-                  <Text>Productos Vendidos: </Text>
+                  <Text>Productos Vendidos: {props.info.quantityProducts}</Text>
                </View>
                <View style={styles.section}>
-                  <Text>Ingresos Totales: {props.info.revenue}</Text>
+                  <Text>Ingresos Totales: {props.info.revenue} S/.</Text>
                </View>
             </View>
-            <View style={styles.tableStyle}>
-               {createTableHeader()}
-               {createTableRow()}
-               {createTableRow()}
-               {createTableRow()}
-               {createTableRow()}
-               {createTableRow()}
+            <View style={styles.tableSection} >
+               <View style={styles.tableStyle}>
+                  {createTableHeader()}
+                  {props.info.sales.map((s:any, index:any)=> createTableRow(s, index) )}
+               </View>
             </View>
          </Page>
       </Document>
@@ -402,52 +443,91 @@ const createTableHeader = () => {
       <View style={styles.tableRowStyle} fixed>
 
          <View style={styles.firstTableColHeaderStyle}>
-            <Text style={styles.tableCellHeaderStyle}>Producto</Text>
+            <Text style={styles.tableCellHeaderStyle}>Id</Text>
          </View>
 
          <View style={styles.tableColHeaderStyle}>
-            <Text style={styles.tableCellHeaderStyle}>Cantidad</Text>
+            <Text style={styles.tableCellHeaderStyle}>Cliente</Text>
          </View>
 
          <View style={styles.tableColHeaderStyle}>
-            <Text style={styles.tableCellHeaderStyle}>Precio</Text>
+            <Text style={styles.tableCellHeaderStyle}>Vendedor</Text>
          </View>
 
          <View style={styles.tableColHeaderStyle}>
-            <Text style={styles.tableCellHeaderStyle}>Pago</Text>
+            <Text style={styles.tableCellHeaderStyle}>N° Prod.</Text>
+         </View>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Voucher</Text>
+         </View>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Total</Text>
+         </View>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>I.G.V</Text>
+         </View>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Desc.</Text>
          </View>
 
          <View style={styles.tableColHeaderStyle}>
             <Text style={styles.tableCellHeaderStyle}>Fecha</Text>
          </View>
+
+         <View style={styles.tableColHeaderStyle}>
+            <Text style={styles.tableCellHeaderStyle}>Pago</Text>
+         </View>
       </View>
    );
 };
 
-const createTableRow = () => {
+const createTableRow = (s: any, index: number ) => {
    return (
-      <View style={styles.tableRowStyle}>
+      <View style={styles.tableRowStyle} key={index}>
 
          <View style={styles.firstTableColStyle}>
-            <Text style={styles.tableCellStyle}>Element</Text>
+            <Text style={styles.tableCellStyle}>{s.idSale}</Text>
+         </View>
+         
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>{s.nameclientSale}</Text>
          </View>
 
          <View style={styles.tableColStyle}>
-            <Text style={styles.tableCellStyle}>Element</Text>
+            <Text style={styles.tableCellStyle}>{s.nameUser}</Text>
          </View>
 
          <View style={styles.tableColStyle}>
-            <Text style={styles.tableCellStyle}>Element</Text>
+            <Text style={styles.tableCellStyle}>{s.qproductsSale}</Text>
          </View>
 
          <View style={styles.tableColStyle}>
-            <Text style={styles.tableCellStyle}>Element</Text>
+            <Text style={styles.tableCellStyle}>{s.voucherSale}</Text>
          </View>
 
          <View style={styles.tableColStyle}>
-            <Text style={styles.tableCellStyle}>Element</Text>
+            <Text style={styles.tableCellStyle}>{s.subtotalSale}</Text>
          </View>
 
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>{s.taxSale}</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>{s.discountSale}</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>{convertDateString(s.dateSale)}</Text>
+         </View>
+
+         <View style={styles.tableColStyle}>
+            <Text style={styles.tableCellStyle}>{s.waytopaySale}</Text>
+         </View>
       </View>
    );
 };
