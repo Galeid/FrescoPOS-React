@@ -3,8 +3,7 @@ import { AuthContext } from '../../../services/AuthContext';
 import { useHistory } from 'react-router-dom'
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import AlertSmall from '../../components/Alert/AlertSmall'
 
 import AirportShuttle from '@material-ui/icons/AirportShuttle'
 import MonetizationOn from '@material-ui/icons/MonetizationOn'
@@ -52,18 +51,6 @@ const MainPage = () => {
       history.goBack();
    }*/
 
-   const Alert = () => {
-      const MySwal = withReactContent(Swal)
-      MySwal.fire({
-         toast: true,
-         position: 'bottom-end',
-         icon: 'info',
-         title: <p>En construccion, no disponible por el momento</p>,
-         timerProgressBar: true,
-         timer: 5000
-      })
-   }
-
    function handleClick2() {
       return (
          <div className="AppContent">
@@ -100,7 +87,7 @@ const MainPage = () => {
          icon: <ShowChart className={classes.itemIcon} />,
          onClick: () => {
             history.push('/dashboard')
-            Alert()
+            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1,2]
       },
@@ -110,7 +97,7 @@ const MainPage = () => {
          icon: <AttachMoney className={classes.itemIcon} />,
          onClick: () => {
             history.push('/dashboard')
-            Alert()
+            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1,2,3]
       },
@@ -120,7 +107,7 @@ const MainPage = () => {
          icon: <LocalShipping className={classes.itemIcon} />,
          onClick: () => {
             history.push('/dashboard')
-            Alert()
+            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1,2,3]
       },
@@ -130,7 +117,7 @@ const MainPage = () => {
          icon: <Accessibility className={classes.itemIcon} />,
          onClick: () => {
             history.push('/dashboard')
-            Alert()
+            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1,2,3]
       },
@@ -140,7 +127,7 @@ const MainPage = () => {
          icon: <Assignment className={classes.itemIcon} />,
          onClick: () => {
             history.push('/dashboard')
-            Alert()
+            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1,2,3]
       },
@@ -150,7 +137,7 @@ const MainPage = () => {
          icon: <Build className={classes.itemIcon} />,
          onClick: () => {
             history.push('/dashboard')
-            Alert()
+            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1,2,3]
       }

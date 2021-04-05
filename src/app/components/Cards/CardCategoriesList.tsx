@@ -4,8 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom'
 //import Icon from '@material-ui/core/Icon';
 import { Delete, Edit/*, Add*/ } from '@material-ui/icons';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import AlertSmall from '../Alert/AlertSmall'
 import {
     Button,
     Box,
@@ -85,22 +84,10 @@ const CategoriesList = (props: { list: any; }) => {
         }
         ipcRenderer.invoke('deletecategory', prepareData)
             .then(() => {
-                Alert('info', 'Se elimino correctamente')
+                AlertSmall('info', 'Se elimino correctamente')
                 getCategories()
                 setPage(0)
             })
-    }
-
-    const Alert = (iconText: any, titleText: {} | null | undefined) => {
-        const MySwal = withReactContent(Swal)
-        MySwal.fire({
-            toast: true,
-            position: 'bottom-end',
-            icon: iconText,
-            title: <p>{titleText}</p>,
-            timerProgressBar: true,
-            timer: 3000
-        })
     }
 
     const handleChange = (e: any) => {

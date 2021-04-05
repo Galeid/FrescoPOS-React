@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-//import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import AlertSmall from '../Alert/AlertSmall'
 import {
     Box,
     Button,
@@ -100,14 +98,14 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         if (productDB.nameProduct !== '' && productDB.priceSellProduct !== '' && productDB.priceBuyProduct !== '' && productDB.stateProduct !== '') {
             ipcRenderer.invoke('insertproduct', prepareData)
                 .then(() => {
-                    Alert('success', 'Se agrego el producto con exito')
+                    AlertSmall('success', 'Se agrego el producto con exito')
                     history.push('/products')
                 }).catch((err: any) => {
                     console.log(err)
-                    Alert('error', 'Ha ocurrido un error')
+                    AlertSmall('error', 'Ha ocurrido un error')
                 })
         } else {
-            Alert('error', 'Debe llenar los campos primero')
+            AlertSmall('error', 'Debe llenar los campos primero')
         }
     }
     //var registro = Date.now();
@@ -128,7 +126,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         ipcRenderer.invoke('updateproductid', prepareData)
             .then((product: any) => {
                 console.log(product)
-                Alert('success', 'Se han guardado los cambios con exito')
+                AlertSmall('success', 'Se han guardado los cambios con exito')
                 history.push('/products')
             }).catch((err: any) => console.log(err))
         //poenr alerta
@@ -149,18 +147,6 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             });
         }
     };
-
-    const Alert = (iconText: any, titleText: {} | null | undefined) => {
-        const MySwal = withReactContent(Swal)
-        MySwal.fire({
-            toast: true,
-            position: 'bottom-end',
-            icon: iconText,
-            title: <p>{titleText}</p>,
-            timerProgressBar: true,
-            timer: 5000
-        })
-    }
 
     useEffect(() => {
         if (id !== 'null') {

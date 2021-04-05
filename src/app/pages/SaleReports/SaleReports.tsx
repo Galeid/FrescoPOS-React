@@ -459,7 +459,7 @@ const createTableHeader = () => {
          </View>
 
          <View style={styles.tableColHeaderStyle}>
-            <Text style={styles.tableCellHeaderStyle}>Voucher</Text>
+            <Text style={styles.tableCellHeaderStyle}>Tipo de Doc.</Text>
          </View>
 
          <View style={styles.tableColHeaderStyle}>

@@ -5,10 +5,9 @@ import { useHistory } from 'react-router-dom'
 
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-//import Icon from '@material-ui/core/Icon';
+import AlertSmall from '../../components/Alert/AlertSmall'
+import AlertBig from '../../components/Alert/AlertBig'
 import { Delete, Edit, Add } from '@material-ui/icons';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import {
     Button,
     Box,
@@ -88,15 +87,7 @@ const ProductList = () => {
     }
 
     const deleteProduct = (id: string) => {
-        Swal.fire({
-            title: 'Estas seguro de eliminar el producto?',
-            text: "Esta accion no se puede revertir!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, deseo eliminarlo!'
-          }).then((result) => {
+        AlertBig('Estas seguro de eliminar el producto?', 'Esta accion no se puede revertir!', 'warning', 'Si, deseo eliminarlo!').then((result: any) => {
             if (result.isConfirmed) {
                 const prepareData = {
                     Entry: {
@@ -106,24 +97,12 @@ const ProductList = () => {
                 }
                 ipcRenderer.invoke('deleteproduct', prepareData)
                     .then(() => {
-                        Alert('info', 'Se elimino correctamente')
+                        AlertSmall('info', 'Se elimino correctamente')
                         getProducts()
                         setPage(0)
                     })
                 }
             })
-    }
-
-    const Alert = (iconText: any, titleText: {} | null | undefined) => {
-        const MySwal = withReactContent(Swal)
-        MySwal.fire({
-            toast: true,
-            position: 'bottom-end',
-            icon: iconText,
-            title: <p>{titleText}</p>,
-            timerProgressBar: true,
-            timer: 3000
-        })
     }
 
     const handleChange = (e: any) => {

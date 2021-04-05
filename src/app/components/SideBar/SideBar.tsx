@@ -17,6 +17,10 @@ import HomeIcon from '@material-ui/icons/Home';
 import LocalGroceryStoreIcon from '@material-ui/icons/LocalGroceryStore';
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import DescriptionIcon from '@material-ui/icons/Description';
+import AssignmentInd from '@material-ui/icons/AssignmentInd';
+import Category from '@material-ui/icons/Category';
+import AirportShuttle from '@material-ui/icons/AirportShuttle';
+import Assignment from '@material-ui/icons/Assignment';
 
 const sideBarWidth = 240
 const useStyles = makeStyles({
@@ -62,25 +66,25 @@ const SideBar = () => {
       },
       {
          text: 'Usuarios',
-         icon: <AddCircleIcon className={classes.itemIcon} />,
+         icon: <AssignmentInd className={classes.itemIcon} />,
          onClick: () => history.push('/users'),
          userRole: [1]
       },
       {
          text: 'Categorías',
-         icon: <AddCircleIcon className={classes.itemIcon} />,
+         icon: <Category className={classes.itemIcon} />,
          onClick: () => history.push('/categories'),
          userRole: [1]
       },
       {
          text: 'Productos',
-         icon: <AddCircleIcon className={classes.itemIcon} />,
+         icon: <AirportShuttle className={classes.itemIcon} />,
          onClick: () => history.push('/products'),
          userRole: [1, 2, 3]
       },
       {
          text: 'Reportes de Ventas',
-         icon: <DescriptionIcon className={classes.itemIcon} />,
+         icon: <Assignment className={classes.itemIcon} />,
          onClick: () => history.push('/saleReports'),
          userRole: [1, 2]
       }

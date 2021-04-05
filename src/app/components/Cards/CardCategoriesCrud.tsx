@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import AlertSmall from '../Alert/AlertSmall'
 import {
     Box,
     Button,
@@ -43,18 +42,6 @@ const CategoriesCrud = (props: { idCategory: any; }) => {
         descriptionCategory: ''
     })
 
-    const Alert = (iconText: any, titleText: {} | null | undefined) => {
-        const MySwal = withReactContent(Swal)
-        MySwal.fire({
-            toast: true,
-            position: 'bottom-end',
-            icon: iconText,
-            title: <p>{titleText}</p>,
-            timerProgressBar: true,
-            timer: 5000
-        })
-    }
-
     const getCategoriesId = () => {
         const prepareData = {
             Entry: { value: props.idCategory },
@@ -88,13 +75,13 @@ const CategoriesCrud = (props: { idCategory: any; }) => {
                 .then((category: any) => {
                     console.log(category)
                     cleanInputs()
-                    Alert('success', 'Se agrego la categoria con exito')
+                    AlertSmall('success', 'Se agrego la categoria con exito')
                 }).catch((err: any) => {
                     console.log(err)
-                    Alert('error', 'Ha ocurrido un error')
+                    AlertSmall('error', 'Ha ocurrido un error')
                 })
         } else {
-            Alert('error', 'Debe llenar el campo de nombre primero')
+            AlertSmall('error', 'Debe llenar el campo de nombre primero')
         }
     }
 
@@ -109,7 +96,7 @@ const CategoriesCrud = (props: { idCategory: any; }) => {
             .then((category: any) => {
                 console.log(category)
                 cleanInputs()
-                Alert('success', 'Se han guardado los cambios con exito')
+                AlertSmall('success', 'Se han guardado los cambios con exito')
             }).catch((err: any) => console.log(err))
         //poenr alerta
     }
