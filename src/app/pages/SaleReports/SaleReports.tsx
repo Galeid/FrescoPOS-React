@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react'
 import {
    Grid, Card, CardContent, Button, Table,
    TableBody, TableCell, TableContainer, TableHead, TableRow,
-   Typography, Divider, FormGroup, FormControlLabel, Checkbox
+   Typography, Divider, TextField, FormControlLabel, Checkbox
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -16,6 +16,12 @@ const useStyles = makeStyles(() => ({
    root: {
       flexGrow: 1,
       margin: '10px',
+   },
+   tfInputmargin: {
+      padding: '9px 9px 9px 9px'
+   },
+   tflabel: {
+      transform: 'translate(10px, 12px) scale(1)'
    },
 }));
 
@@ -45,7 +51,6 @@ let orderDataOrigin = {
    orderUser: '-',
    orderWay: '-',
    orderState: '-',
-   orderDiscount: '-',
 }
 
 const round2Decimals = (num: any) => {
@@ -68,6 +73,8 @@ const SaleReports = () => {
    const classes = useStyles()
    const { user } = useContext(AuthContext)
 
+   const [inputSaleId, setInputSaleId] = useState('')
+
    const [salesDB, setSalesDB] = useState(salesFromDB)
    const [orderDB, setOrderDB] = useState(orderFromDB)
    const [orderData, setOrderData] = useState(orderDataOrigin)
@@ -76,7 +83,6 @@ const SaleReports = () => {
    const [revenueSales, setRevenueSales] = useState(0)
    const [taxSales, setTaxSales] = useState(0)
    const [isReadyPdf, setIsReadyPdf] = useState(false)
-   const [detailedPdf, setDetailedPdf] = useState(false)
    const [pdfInfo, setPdfInfo] = useState({
       tax: taxSales,
       revenue: revenueSales,
@@ -97,12 +103,6 @@ const SaleReports = () => {
       console.log(pdfInfo)
       // eslint-disable-next-line
    }, [pdfInfo])
-
-   useEffect(() => {
-      setPdfInfo({...pdfInfo,
-         detailed: detailedPdf,
-      })
-   }, [detailedPdf])
    
    const setSalesTableData = (sales: any, tos: string) => {
       let newNum = 0
@@ -135,7 +135,20 @@ const SaleReports = () => {
             dateTo: convertDateString(dateTo),
             quantityProducts: qp,
          })
+      }else if (tos == 'id') {
+         setPdfInfo({ ...pdfInfo,
+            revenue: newNum,
+            tax: newTax,
+            sales: sales,
+            dateFrom: 'el inicio',
+            dateTo: 'el final',
+            quantityProducts: qp,
+         })
       }
+   }
+
+   const inputChangeId = (e:any) => {
+      setInputSaleId(e.target.value)
    }
 
    const resetOrders = () => {
@@ -166,7 +179,6 @@ const SaleReports = () => {
                orderUser: s.nameUser + '',
                orderWay: s.waytopaySale + '',
                orderState: s.stateSale ? 'Activo' : 'Inactivo',
-               orderDiscount: s.discountSale + '',
             }
             setOrderData(orderNewData)
             setOrderDB(orders)
@@ -186,6 +198,21 @@ const SaleReports = () => {
          })
    }
 
+   const searchSaleId = () => {
+      if (inputSaleId === '') {
+         getSales()
+         return
+      }
+      const prepareData = {
+         Entry: { value: inputSaleId },
+         spName: 'spSearchSaleId'
+      }
+      ipcRenderer.invoke('searchsaleid', prepareData)
+         .then((sales: any) => {
+            setSalesTableData(sales, 'id')
+            resetOrders()
+         })
+   }
 
    return (
       <>
@@ -237,23 +264,12 @@ const SaleReports = () => {
                            :
                            <Button fullWidth variant="contained" color="secondary" onClick={() => setIsReadyPdf(!isReadyPdf)} style={{marginBottom:'8px'}}>Preparar PDF</Button> 
                         }
-                        {/* {<FormGroup>
-                           <FormControlLabel
-                              control={
-                                 <Checkbox
-                                    checked={detailedPdf}
-                                    onChange={() => setDetailedPdf(!detailedPdf)}
-                                    color="primary"
-                                 />
-                              }
-                              label="Detallado?"
-                           />
-                        </FormGroup> */}
                      </Grid>
                   </Grid>
                </MuiPickersUtilsProvider>
             </CardContent>
          </Card>
+
          <Grid container spacing={1}>
             <Grid item xs={8}>
                <Card className={classes.root}>
@@ -296,12 +312,26 @@ const SaleReports = () => {
                      <Typography variant="subtitle1" align="center">S/ {revenueSales} (+{taxSales} de impuestos)</Typography>
                   </CardContent>
                </Card>
+               <Card className={classes.root} style={{ marginBottom: '8px' }}>
+                  <CardContent>
+                     <TextField 
+                        fullWidth
+                        InputProps={{ classes: { input: classes.tfInputmargin } }}
+                        InputLabelProps={{ classes: { outlined: classes.tflabel } }}
+                        variant="outlined"
+                        placeholder="Ingrese un ID"
+                        value={inputSaleId}
+                        onChange={inputChangeId}
+                        style={{ marginRight: '4px'}}
+                     />
+                     <Button fullWidth variant="contained" color="primary" onClick={searchSaleId}>Buscar por ID</Button>
+                  </CardContent>
+               </Card>
                <Card className={classes.root}>
                   <CardContent>
                      <Typography variant="h6">Código de la Venta: {orderData.orderCode}</Typography>
                      <Typography variant="subtitle2">Vendedor: {orderData.orderUser}</Typography>
                      <Typography variant="subtitle2">Metodo de Pago: {orderData.orderWay}</Typography>
-                     <Typography variant="subtitle2">Descuento: {orderData.orderDiscount}</Typography>
                      <Typography variant="subtitle2" style={{ marginBottom: '8px' }}>Estado: {orderData.orderState}</Typography>
                      <Divider />
                      <Typography variant="h6" style={{ marginTop: '8px' }}>Lista de Productos:</Typography>
@@ -403,12 +433,12 @@ const styles = StyleSheet.create({
 
 const MyDocumentViewer = (props: { info: any }) => {
    
-   const [arrSales, setArrSales] = useState(salesFromDB)
-   useEffect(() => {
-      const newArrSales = props.info.sales.slice()
-      console.log(newArrSales)
-      setArrSales(newArrSales)
-   }, [])
+   // const [arrSales, setArrSales] = useState(salesFromDB)
+   // useEffect(() => {
+   //    const newArrSales = props.info.sales.slice()
+   //    console.log(newArrSales)
+   //    setArrSales(newArrSales)
+   // }, [])
 
    return useMemo(() => (
       <Document>

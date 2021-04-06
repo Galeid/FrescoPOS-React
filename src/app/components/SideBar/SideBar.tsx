@@ -15,8 +15,8 @@ import logo from './Logo3.png';
 //Icons
 import HomeIcon from '@material-ui/icons/Home';
 import LocalGroceryStoreIcon from '@material-ui/icons/LocalGroceryStore';
-import AddCircleIcon from '@material-ui/icons/AddCircle'
-import DescriptionIcon from '@material-ui/icons/Description';
+// import AddCircleIcon from '@material-ui/icons/AddCircle'
+// import DescriptionIcon from '@material-ui/icons/Description';
 import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Category from '@material-ui/icons/Category';
 import AirportShuttle from '@material-ui/icons/AirportShuttle';

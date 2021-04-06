@@ -157,7 +157,6 @@ const createSale = (event, args) => {
                 args.Voucher.type = TYPES.NVarChar
                 args.Date.type = TYPES.Date
                 args.Qproduct.type = TYPES.Int
-                args.Discount.type = TYPES.Float
                 args.Cash.type = TYPES.Float
                 args.Tax.type = TYPES.Float
                 args.Subtotal.type = TYPES.Float
@@ -438,6 +437,18 @@ const searchSales = (event, args) => {
     })
 }
 
+const searchSaleId = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Entry.type = TYPES.NVarChar
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -462,3 +473,4 @@ ipcMain.handle('deletecategory', deleteCategory)
 ipcMain.handle('getsales', getSales)
 ipcMain.handle('getorders', getOrders)
 ipcMain.handle('searchsales', searchSales)
+ipcMain.handle('searchsaleid', searchSaleId)

@@ -66,8 +66,8 @@ const useStyles = makeStyles({
       paddingLeft: '0px'
    },
    inputRoot: {
-      '&&[class*="MuiOutlinedInput-root"] $input': {
-         padding: '0'
+      '&[class*="MuiOutlinedInput-root"]': {
+         padding: '0px'
       }
    },
    tfInputmargin: {
@@ -77,7 +77,7 @@ const useStyles = makeStyles({
       transform: 'translate(10px, 12px) scale(1)'
    },
    fclabel: {
-      fontSize: '0.9rem'
+      fontSize: '0.85rem'
    },
    input: {},
 })
@@ -85,8 +85,6 @@ const useStyles = makeStyles({
 const SalePage = () => {
    const classes = useStyles()
    const { user } = useContext(AuthContext)
-
-   const [discount, setDiscount] = useState(0)
 
    const [change, setChange] = useState(fillDecimals(0))
    const [cashPayment, setCashPayment] = useState(0)
@@ -102,7 +100,7 @@ const SalePage = () => {
 
    const [saleProducts, setSaleProducts] = useState(productsFromDB)
    const [saleData, setSaleData] = useState(saledataFromDB)
-   const [saleVoucher, setSaleVoucher] = useState('boleta')
+   const [saleVoucher, setSaleVoucher] = useState('ticket')
    const [saleWayToPay, setSaleWayToPay] = useState('efectivo')
 
    useEffect(() => {
@@ -165,19 +163,6 @@ const SalePage = () => {
       setSearchReason(reason)
       setSearchValue(value)
    }
-
-   const handleDiscount = (event: any, index: any) => {
-      setDiscount(event.target.value)
-   }
-
-   useEffect(() =>{
-      let disc = 0
-      for (let i = 0; i < saleData.length; i++) {
-         disc =  disc + saleData[i].amountProduct - ( saleData[i].amountProduct * (discount / 100))
-      }
-      setSubTotal(fillDecimals(round2Decimals(disc)))
-      // eslint-disable-next-line
-   }, [discount])
    
    const handleQuantityProduct = (event: any, index: any) => {
       let newSaleData = saleData.slice()
@@ -194,7 +179,6 @@ const SalePage = () => {
       
             newSaleData[index] = data
             setSaleData(newSaleData)
-            setDiscount(0)
          }
       }
    }
@@ -362,7 +346,6 @@ const SalePage = () => {
          Voucher: { value: saleVoucher },
          Date: { value: dateval },
          Qproduct: { value: qproductval },
-         Discount: { value: discount },
          Cash: { value: cashPayment },
          Tax: { value: Number(igv) },
          Subtotal: { value: Number(subTotal) },
@@ -398,7 +381,7 @@ const SalePage = () => {
       <>
          <Grid container spacing={2}>
             <Grid item xs={8}>
-               <Card>
+               <Card style={{ marginBottom: "8px"}}>
                   <CardContent>
                      <Grid container spacing={1}>
                         <Grid item xs={10}>
@@ -443,7 +426,6 @@ const SalePage = () => {
                                     <TableCell align="center">Producto</TableCell>
                                     <TableCell align="center">Precio Unidad</TableCell>
                                     <TableCell align="center">Precio Venta</TableCell>
-                                    <TableCell align="center">Descuento %</TableCell>
                                     <TableCell align="center">Acciones</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -463,15 +445,6 @@ const SalePage = () => {
                                        <TableCell align="center">{p.nameProduct}</TableCell>
                                        <TableCell align="center">{p.priceSellProduct}</TableCell>
                                        <TableCell align="center">{p.amountProduct}</TableCell>
-                                       <TableCell align="center">
-                                          <TextField
-                                             label="Descuento"
-                                             value={discount}
-                                             type="number" 
-                                             onChange={(e) => handleDiscount(e, index)}
-                                             variant="outlined"
-                                             />
-                                       </TableCell>
                                        <TableCell align="center">
                                           <Button variant="contained" color="primary" onClick={() => deleteSaleProduct(index)}>DEL</Button>
                                        </TableCell>
@@ -506,8 +479,9 @@ const SalePage = () => {
                   <FormControl>
                      <FormLabel style={{ color: 'black' }}>Tipo de Voucher</FormLabel>
                      <RadioGroup row aria-label="voucher" value={saleVoucher} onChange={radioVoucher}>
-                        <FormControlLabel value="boleta" control={<Radio />} label="Boleta" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="factura" control={<Radio />} label="Factura" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="ticket" control={<Radio size="small" />} label="Ticket" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="boleta" control={<Radio size="small" />} label="Boleta" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="factura" control={<Radio size="small" />} label="Factura" classes={{ label: classes.fclabel}}/>
                      </RadioGroup>
                   </FormControl>
 
@@ -515,8 +489,10 @@ const SalePage = () => {
                   <FormControl>
                      <FormLabel style={{ color: 'black' }}>Método de Pago</FormLabel>
                      <RadioGroup row aria-label="waytopay" value={saleWayToPay} onChange={radioWayToPay}>
-                        <FormControlLabel value="efectivo" control={<Radio />} label="Efectivo" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="tarjeta" control={<Radio />} label="Tarjeta" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="efectivo" control={<Radio size="small" />} label="Efectivo" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="visa" control={<Radio size="small" />} label="Visa" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="mastercard" control={<Radio size="small" />} label="MasterCard" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="yape" control={<Radio size="small" />} label="Yape" classes={{ label: classes.fclabel}}/>
                      </RadioGroup>
                   </FormControl>
 
