@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Box, Grid, Card, CardContent, Button,
+import {
+   Box, Grid, Card, CardContent, Button,
    TextField, Table, TableBody, TableCell, TableContainer,
-   TableHead, TableRow, Typography, Divider, FormControl, 
-   FormControlLabel, RadioGroup, Radio, FormLabel } from '@material-ui/core'
+   TableHead, TableRow, Typography, Divider, FormControl,
+   FormControlLabel, RadioGroup, Radio, FormLabel
+} from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
 import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../../services/AuthContext'
+import { Delete } from '@material-ui/icons';
+import AlertSmall from '../../components/Alert/AlertSmall'
+import AlertBig from '../../components/Alert/AlertBig'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -17,6 +22,8 @@ interface Product {
    nameProduct: any,
    stockProduct: any,
    priceSellProduct: any,
+   priceBuyProduct: any,
+   dateProduct: any,
    descriptionProduct: any,
    stateProduct: any
 }
@@ -33,15 +40,15 @@ let saledataFromDB: SaleData[] = []
 let searchoptionsFromDB: any[] = []
 
 const fillDecimals = (number: number) => {
-   function pad(input: any, length: any, padding: any): any { 
+   function pad(input: any, length: any, padding: any): any {
       let str = input + '';
       return (length <= str.length) ? str : pad(str + padding, length, padding);
    }
-   let str = number+'';
+   let str = number + '';
    let dot = str.lastIndexOf('.');
    let isDecimal = dot !== -1;
    let integer = isDecimal ? str.substr(0, dot) : str;
-   let decimals = isDecimal ? str.substr(dot+1)  : '';
+   let decimals = isDecimal ? str.substr(dot + 1) : '';
    decimals = pad(decimals, 2, 0);
    return integer + '.' + decimals;
 }
@@ -79,10 +86,18 @@ const useStyles = makeStyles({
    fclabel: {
       fontSize: '0.85rem'
    },
-   input: {},
+   nomargin: {
+      margin: 0
+  },
+  rootbutton: {
+     minWidth: 'auto',
+     padding: '6px 8px 6px 8px'
+  },
+  input: {},
 })
 
 const SalePage = () => {
+   let registro: Date = new Date();
    const classes = useStyles()
    const { user } = useContext(AuthContext)
 
@@ -150,7 +165,7 @@ const SalePage = () => {
       updateTotalIgv()
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [saleVoucher])
-   
+
    useEffect(() => {
       updateChange()
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,7 +178,7 @@ const SalePage = () => {
       setSearchReason(reason)
       setSearchValue(value)
    }
-   
+
    const handleQuantityProduct = (event: any, index: any) => {
       let newSaleData = saleData.slice()
       let data = newSaleData[index]
@@ -176,7 +191,7 @@ const SalePage = () => {
          } else {
             data.quantityProduct = Number(event.target.value)
             data.amountProduct = round2Decimals(data.priceSellProduct * Number(event.target.value))
-      
+
             newSaleData[index] = data
             setSaleData(newSaleData)
          }
@@ -204,7 +219,7 @@ const SalePage = () => {
    const inputChangeCash = (event: any) => {
       setCashPayment(event.target.value)
    }
-   
+
    const clearSearchField = () => {
       let item: HTMLElement = document.getElementsByClassName('MuiAutocomplete-clearIndicator')[0] as HTMLElement
       item.click()
@@ -219,25 +234,30 @@ const SalePage = () => {
       } else {
          setIgv(fillDecimals(igvCalc))
       }
-      let totalFinal = round2Decimals(subTotalNum + igvCalc)
+      let totalFinal = round2Decimals(subTotalNum - igvCalc)
+      //let totalFinal = round2Decimals(subTotalNum)
       setTotal(fillDecimals(totalFinal))
    }
 
    const updateChange = () => {
-      if (isNumeric(cashPayment)){
+      if (isNumeric(cashPayment)) {
          let newChange = round2Decimals(cashPayment - Number(total))
          setChange(fillDecimals(newChange))
       }
    }
 
    const deleteSaleProduct = (index: any) => {
-      let newSaleData = saleData.slice()
-      newSaleData.splice(index, 1)
-      setSaleData(newSaleData)
-
-      let newSaleProducts = saleProducts.slice()
-      newSaleProducts.splice(index, 1)
-      setSaleProducts(newSaleProducts)
+      AlertBig('Estas seguro de eliminar el producto?', 'El producto sera eliminado de la lista!', 'warning', 'Si, deseo eliminarlo!').then((result: any) => {
+         if (result.isConfirmed) {
+            let newSaleData = saleData.slice()
+            newSaleData.splice(index, 1)
+            setSaleData(newSaleData)
+      
+            let newSaleProducts = saleProducts.slice()
+            newSaleProducts.splice(index, 1)
+            setSaleProducts(newSaleProducts)
+         }
+      })
    }
 
    const addOneQuantity = (exist: any) => {
@@ -245,7 +265,7 @@ const SalePage = () => {
       let data = newSaleData[exist]
       let newQuantity = data.quantityProduct + 1
 
-      if (newQuantity <= data.stockProduct){
+      if (newQuantity <= data.stockProduct) {
          data.quantityProduct = newQuantity
          data.amountProduct = round2Decimals(data.priceSellProduct * newQuantity)
          newSaleData[exist] = data
@@ -283,7 +303,7 @@ const SalePage = () => {
             }
          })
    }
-   
+
    const addSaleProduct = () => {
       const prepareData = {
          Entry: {
@@ -304,14 +324,17 @@ const SalePage = () => {
                      setSaleProducts(aux)
                   } else {
                      addOneQuantity(exist)
-                     console.log('addSaleProduct(): Producto ya agregado')
+                     AlertSmall('info', 'Producto ya agregado.')
+                     //console.log('addSaleProduct(): Producto ya agregado')
                   }
                } else {
-                  console.log('addSaleProduct(): Producto sin stock')
+                  AlertSmall('info', 'Producto sin stock.')
+                  //console.log('addSaleProduct(): Producto sin stock')
                }
                clearSearchField()
             } else {
-               console.log('addSaleProduct(): Producto no encontrado')
+               AlertSmall('error', 'Producto no encontrado.')
+               //console.log('addSaleProduct(): Producto no encontrado')
             }
          })
    }
@@ -323,15 +346,18 @@ const SalePage = () => {
       }
       let changeval = Number(change)
       if (qproductval === 0) {
-         console.log('createSale(): No hay productos para realizar la venta.')
+         AlertSmall('info', 'No hay productos para realizar la venta.')
+         //console.log('createSale(): No hay productos para realizar la venta.')
          return
       }
       if (changeval < 0) {
-         console.log('createSale(): El cambio es negativo, te están robando crack.')
+         AlertSmall('info', 'El cambio es negativo.')
+         //console.log('createSale(): El cambio es negativo, te están robando crack.')
          return
       }
-      if (!isNumeric(cashPayment)){
-         console.log('createSale(): El monto de pago no es numérico.')
+      if (!isNumeric(cashPayment)) {
+         AlertSmall('info', 'El monto de pago no es numérico o no es valido.')
+         //console.log('createSale(): El monto de pago no es numérico.')
          return
       }
       let nameclientval = clientName
@@ -339,7 +365,7 @@ const SalePage = () => {
          nameclientval = 'Varios'
       }
       let dateval: Date = new Date();
-      
+
       const prepareData = {
          Iduser: { value: user.idUser },
          Nameclient: { value: nameclientval },
@@ -348,7 +374,7 @@ const SalePage = () => {
          Qproduct: { value: qproductval },
          Cash: { value: cashPayment },
          Tax: { value: Number(igv) },
-         Subtotal: { value: Number(subTotal) },
+         Subtotal: { value: Number(total) },
          Change: { value: Number(change) },
          Waytopay: { value: saleWayToPay },
          spName: 'spCreateSale'
@@ -358,22 +384,50 @@ const SalePage = () => {
             for (let i = 0; i < saleProducts.length; i++) {
                const idproduct = saleProducts[i].idProduct
                const quantity = saleData[i].quantityProduct
+               const product = saleProducts[i]
                createOrder(idproduct, scope[0].scopeIdentity, quantity)
+               updateStock(product, quantity)
             }
             clearAllInput()
+            AlertSmall('success', 'Venta registrada correctamente.')
          })
+   }
+
+   const updateStock = (product: any, quantity: any) => {
+      let newStock = product.stockProduct - quantity
+      if (newStock){
+         product.stateProduct = true
+      }else{
+         product.stateProduct = false
+      }
+      const prepareData = {
+         IdCategory: { value: product.idCategory },
+         Barcode: { value: product.barcodeProduct },
+         NameProduct: { value: product.nameProduct },
+         StockProduct: { value: newStock },
+         PriceSellProduct: { value: product.priceSellProduct },
+         PriceBuyProduct: { value: product.priceBuyProduct },
+         DateProduct: { value: registro },
+         DescriptionProduct: { value: product.descriptionProduct },
+         StateProduct: { value: product.stateProduct },
+         IdProduct: { value: product.idProduct },
+         spName: 'spUpdateProduct'
+      }
+      ipcRenderer.invoke('updateproductid', prepareData)
+         .then(() => {
+         }).catch((err: any) => AlertSmall('error',  `Ha ocurrido un error, ${err}`))
    }
 
    const createOrder = (idPro: any, idSal: any, quantity: any) => {
       const prepareData = {
-         Idproduct: { value: idPro},
-         Idsale: { value: idSal},
-         Quantity: { value: quantity},
+         Idproduct: { value: idPro },
+         Idsale: { value: idSal },
+         Quantity: { value: quantity },
          spName: 'spCreateOrder'
       }
       ipcRenderer.invoke('createorder', prepareData)
-         .then((message: any) => {
-            console.log(message + 'createOrder(): Producto de orden creada.')
+         .then(() => {
+            //console.log(message + 'createOrder(): Producto de orden creada.')
          })
    }
 
@@ -381,7 +435,7 @@ const SalePage = () => {
       <>
          <Grid container spacing={2}>
             <Grid item xs={8}>
-               <Card style={{ marginBottom: "8px"}}>
+               <Card style={{ marginBottom: "8px" }}>
                   <CardContent>
                      <Grid container spacing={1}>
                         <Grid item xs={10}>
@@ -398,15 +452,15 @@ const SalePage = () => {
                               options={searchOptions}
                               onBlur={() => setSearchOptions([])}
                               onInputChange={inputChangeSearch}
-                              renderInput={(params) => ( 
+                              renderInput={(params) => (
                                  <TextField {...params}
                                     variant="outlined"
                                     placeholder="Ingrese el nombre o código de barra del Producto"
                                     onKeyDown={onKeyDSField}
                                     value={searchValue}
-                                 /> 
+                                 />
                               )}
-                           /> 
+                           />
                         </Grid>
                         <Grid item xs={2}>
                            <Button variant="contained" color="primary" onClick={addSaleProduct}>Agregar</Button>
@@ -419,38 +473,43 @@ const SalePage = () => {
                   <CardContent>
                      <TableContainer>
                         <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell align="center">Item</TableCell>
-                                    <TableCell align="center">Cantidad</TableCell>
-                                    <TableCell align="center">Producto</TableCell>
-                                    <TableCell align="center">Precio Unidad</TableCell>
-                                    <TableCell align="center">Precio Venta</TableCell>
-                                    <TableCell align="center">Acciones</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {saleData.map((p, index) => (
-                                    <TableRow key={index}>
-                                       <TableCell align="center">{index + 1}</TableCell>
-                                       <TableCell align="center">
-                                          <TextField
-                                          value={p.quantityProduct} 
-                                          type="number" 
+                           <TableHead>
+                              <TableRow>
+                                 <TableCell align="center">Item</TableCell>
+                                 <TableCell align="center">Cantidad</TableCell>
+                                 <TableCell align="center">Producto</TableCell>
+                                 <TableCell align="center">Precio Unidad</TableCell>
+                                 <TableCell align="center">Precio Venta</TableCell>
+                                 <TableCell align="center">Acciones</TableCell>
+                              </TableRow>
+                           </TableHead>
+                           <TableBody>
+                              {saleData.map((p, index) => (
+                                 <TableRow key={index}>
+                                    <TableCell align="center">{index + 1}</TableCell>
+                                    <TableCell align="center">
+                                       <TextField
+                                          value={p.quantityProduct}
+                                          type="number"
                                           InputProps={{ inputProps: { min: 1, max: p.stockProduct } }}
                                           onChange={(e) => handleQuantityProduct(e, index)}
                                           onFocus={event => event.target.select()}
-                                          />
-                                       </TableCell>
-                                       <TableCell align="center">{p.nameProduct}</TableCell>
-                                       <TableCell align="center">{p.priceSellProduct}</TableCell>
-                                       <TableCell align="center">{p.amountProduct}</TableCell>
-                                       <TableCell align="center">
-                                          <Button variant="contained" color="primary" onClick={() => deleteSaleProduct(index)}>DEL</Button>
-                                       </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
+                                       />
+                                    </TableCell>
+                                    <TableCell align="center">{p.nameProduct}</TableCell>
+                                    <TableCell align="center">{p.priceSellProduct}</TableCell>
+                                    <TableCell align="center">{p.amountProduct}</TableCell>
+                                    <TableCell align="center">
+                                       <Button variant="contained" color="secondary" onClick={() => deleteSaleProduct(index)} 
+                                       classes={{
+                                          startIcon: classes.nomargin,
+                                          root: classes.rootbutton
+                                       }} 
+                                       startIcon={<Delete />} />
+                                    </TableCell>
+                                 </TableRow>
+                              ))}
+                           </TableBody>
                         </Table>
                      </TableContainer>
                   </CardContent>
@@ -464,44 +523,44 @@ const SalePage = () => {
                   </Typography>
                </Box>
 
-               <Box border={1}  py={3} px={3}>
+               <Box border={1} py={3} px={3}>
                   <TextField
                      fullWidth
                      InputProps={{ classes: { input: classes.tfInputmargin } }}
                      InputLabelProps={{ classes: { outlined: classes.tflabel } }}
-                     variant="outlined" 
-                     label="Nombre del Cliente" 
-                     value={clientName} 
+                     variant="outlined"
+                     label="Nombre del Cliente"
+                     value={clientName}
                      onChange={inputChangeClient}
-                     style={{ marginBottom: '8px'}}
+                     style={{ marginBottom: '8px' }}
                   />
 
                   <FormControl>
                      <FormLabel style={{ color: 'black' }}>Tipo de Voucher</FormLabel>
                      <RadioGroup row aria-label="voucher" value={saleVoucher} onChange={radioVoucher}>
-                        <FormControlLabel value="ticket" control={<Radio size="small" />} label="Ticket" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="boleta" control={<Radio size="small" />} label="Boleta" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="factura" control={<Radio size="small" />} label="Factura" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="ticket" control={<Radio size="small" />} label="Ticket" classes={{ label: classes.fclabel }} />
+                        <FormControlLabel value="boleta" control={<Radio size="small" />} label="Boleta" classes={{ label: classes.fclabel }} />
+                        <FormControlLabel value="factura" control={<Radio size="small" />} label="Factura" classes={{ label: classes.fclabel }} />
                      </RadioGroup>
                   </FormControl>
 
-                  <Divider style={{ marginBottom: '8px' }}/>
+                  <Divider style={{ marginBottom: '8px' }} />
                   <FormControl>
                      <FormLabel style={{ color: 'black' }}>Método de Pago</FormLabel>
                      <RadioGroup row aria-label="waytopay" value={saleWayToPay} onChange={radioWayToPay}>
-                        <FormControlLabel value="efectivo" control={<Radio size="small" />} label="Efectivo" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="visa" control={<Radio size="small" />} label="Visa" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="mastercard" control={<Radio size="small" />} label="MasterCard" classes={{ label: classes.fclabel}}/>
-                        <FormControlLabel value="yape" control={<Radio size="small" />} label="Yape" classes={{ label: classes.fclabel}}/>
+                        <FormControlLabel value="efectivo" control={<Radio size="small" />} label="Efectivo" classes={{ label: classes.fclabel }} />
+                        <FormControlLabel value="visa" control={<Radio size="small" />} label="Visa" classes={{ label: classes.fclabel }} />
+                        <FormControlLabel value="mastercard" control={<Radio size="small" />} label="MasterCard" classes={{ label: classes.fclabel }} />
+                        <FormControlLabel value="yape" control={<Radio size="small" />} label="Yape" classes={{ label: classes.fclabel }} />
                      </RadioGroup>
                   </FormControl>
 
-                  <Divider style={{ marginBottom: '8px' }}/>
-                  
+                  <Divider style={{ marginBottom: '8px' }} />
 
-                  <Grid container spacing={0} style={{ marginBottom: '8px'}}>
+
+                  <Grid container spacing={0} style={{ marginBottom: '8px' }}>
                      <Grid item xs={6}>
-                        <TextField 
+                        <TextField
                            fullWidth
                            InputProps={{ classes: { input: classes.tfInputmargin } }}
                            InputLabelProps={{ classes: { outlined: classes.tflabel } }}
@@ -510,12 +569,12 @@ const SalePage = () => {
                            type="number"
                            value={cashPayment}
                            onChange={inputChangeCash}
-                           style={{ marginRight: '4px'}}
+                           style={{ marginRight: '4px' }}
                         />
                      </Grid>
                      <Grid container item xs={6}>
                         <Grid item xs={5} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                           <Typography variant="body2" style={{ fontSize: '0.8rem'}}> CAMBIO: </Typography>
+                           <Typography variant="body2" style={{ fontSize: '0.8rem' }}> CAMBIO: </Typography>
                         </Grid>
                         <Grid item xs={7} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                            <Typography variant="body2" className={classes.center}> S/. {change} </Typography>
@@ -523,14 +582,14 @@ const SalePage = () => {
                      </Grid>
                   </Grid>
 
-                  <Divider style={{ marginBottom: '8px' }}/>
+                  <Divider style={{ marginBottom: '8px' }} />
                   <Grid container spacing={0}>
                      <Grid container item xs={12}>
                         <Grid item xs={6}>
                            <Typography variant="body2"> SUB TOTAL </Typography>
                         </Grid>
                         <Grid item xs={6}>
-                           <Typography variant="body2" className={classes.center}>S/. {subTotal}</Typography>
+                           <Typography variant="body2" className={classes.center}>S/. {total}</Typography>
                         </Grid>
                      </Grid>
 
@@ -548,7 +607,7 @@ const SalePage = () => {
                            <Typography variant="body2"> TOTAL </Typography>
                         </Grid>
                         <Grid item xs={6}>
-                           <Typography variant="body2" className={classes.center}> S/. {total} </Typography>
+                           <Typography variant="body2" className={classes.center}> S/. {subTotal} </Typography>
                         </Grid>
                      </Grid>
 

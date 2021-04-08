@@ -19,8 +19,7 @@ import {
    InputLabel
 } from '@material-ui/core';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import AlertSmall from '../../Alert/AlertSmall'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -67,7 +66,6 @@ const CardUserDetails = (props: { idUser: any; }) => {
    }
 
    const insertUser = () => {
-      console.log('insertProducts')
       const prepareData = {
          Idrole: { value: userDB.idRole},
          Name: { value: userDB.nameUser},
@@ -83,15 +81,13 @@ const CardUserDetails = (props: { idUser: any; }) => {
       if (userDB.nameUser !== '' && userDB.emailUser !== '' && userDB.passwordUser !== '') {
           ipcRenderer.invoke('insertuser', prepareData)
               .then(() => {
-                  Alert('success', 'Se agrego el producto con exito')
+                  AlertSmall('success', 'Se agrego el usuario con exito')
                   history.push('/users')
               }).catch((err: any) => {
-                  console.log(err)
-                  Alert('error', 'Ha ocurrido un error')
+                  AlertSmall('error', `Ha ocurrido un error, ${err}`)
               })
       } else {
-          console.log('Hola2')
-          Alert('error', 'Le falta completar algunos campos')
+          AlertSmall('error', 'Le falta completar algunos campos')
       }
    }
   
@@ -111,20 +107,8 @@ const CardUserDetails = (props: { idUser: any; }) => {
       ipcRenderer.invoke('updateuser', prepareData)
           .then((message: any) => {
               console.log(message)
-              Alert('success', 'Se han guardado los cambios con exito')
-          }).catch((err: any) => console.log(err))
-   }
-
-   const Alert = (iconText: any, titleText: {} | null | undefined) => {
-      const MySwal = withReactContent(Swal)
-      MySwal.fire({
-            toast: true,
-            position: 'bottom-end',
-            icon: iconText,
-            title: <p>{titleText}</p>,
-            timerProgressBar: true,
-            timer: 5000
-      })
+              AlertSmall('success', 'Se han guardado los cambios con exito')
+          }).catch((err: any) => AlertSmall('error', `Ha ocurrido un error, ${err}`))
    }
 
    return (
@@ -132,7 +116,7 @@ const CardUserDetails = (props: { idUser: any; }) => {
          <Card>
             <CardHeader
                subheader="Nota: Debe llenar obligatoriamente los campos del usuario"
-               title="Editar Usuario"
+               title={id !== 'null' ? 'Editar Usuario' : 'Insertar Usuario'}
             />
             <Divider />
             <CardContent>
@@ -257,7 +241,7 @@ const CardUserDetails = (props: { idUser: any; }) => {
                         variant="contained"
                         onClick={id !== 'null' ? updateUser : insertUser}
                      >
-                        {id !== 'null' ? 'Guardar' : 'Insertar Producto'}
+                        {id !== 'null' ? 'Guardar' : 'Insertar'}
                      </Button>
                   </Grid>
                </Grid>

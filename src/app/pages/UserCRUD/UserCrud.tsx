@@ -5,6 +5,8 @@ import { Card, CardContent, Typography, Button, Grid,
 import { Delete, Edit, Add, Block } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom'
+import AlertSmall from '../../components/Alert/AlertSmall'
+import AlertBig from '../../components/Alert/AlertBig'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -74,22 +76,27 @@ const UserCrud = () => {
          spName: 'spUpdateUser'
       }
       ipcRenderer.invoke('updateuser', prepareData)
-         .then((message: any) => {
-            console.log(message + ' Cambio de estado de usuario')
+         .then(() => {
+            AlertSmall('success', 'Cambio de estado de usuario')
+            //console.log(message + 'Cambio de estado de usuario')
             getUsers()
          })
    }
 
    const deleteUser = (u:any) => {
-      const prepareData = {
-         Entry: { value: u.idUser},
-         spName: 'spDeleteUser'
-      }
-      ipcRenderer.invoke('deleteuser', prepareData)
-         .then((message: any) => {
-            console.log(message)
-            getUsers()
-         })
+      AlertBig('Estas seguro de eliminar el producto?', 'Esta accion no se puede revertir!', 'warning', 'Si, deseo eliminarlo!').then((result: any) => {
+         if (result.isConfirmed) {
+            const prepareData = {
+               Entry: { value: u.idUser},
+               spName: 'spDeleteUser'
+            }
+            ipcRenderer.invoke('deleteuser', prepareData)
+               .then((message: any) => {
+                  console.log(message)
+                  getUsers()
+               })
+         }
+      })
    }
 
    return show ? (
