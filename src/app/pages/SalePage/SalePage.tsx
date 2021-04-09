@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { useReactToPrint } from 'react-to-print';
 import {
    Box, Grid, Card, CardContent, Button,
    TextField, Table, TableBody, TableCell, TableContainer,
    TableHead, TableRow, Typography, Divider, FormControl,
-   FormControlLabel, RadioGroup, Radio, FormLabel
+   FormControlLabel, Container, RadioGroup, Radio, FormLabel
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
@@ -88,13 +89,20 @@ const useStyles = makeStyles({
    },
    nomargin: {
       margin: 0
-  },
-  rootbutton: {
-     minWidth: 'auto',
-     padding: '6px 8px 6px 8px'
-  },
-  input: {},
+   },
+   rootbutton: {
+      minWidth: 'auto',
+      padding: '6px 8px 6px 8px'
+   },
+   paper: {
+      maxWidth: 330,
+      margin: 'auto',
+      padding: 'auto',
+   },
+   input: {},
 })
+
+
 
 const SalePage = () => {
    let registro: Date = new Date();
@@ -104,6 +112,7 @@ const SalePage = () => {
    const [change, setChange] = useState(fillDecimals(0))
    const [cashPayment, setCashPayment] = useState(0)
    const [clientName, setClientName] = useState('')
+   const [showTicket, setShowTicket] = useState(true)
 
    const [subTotal, setSubTotal] = useState(fillDecimals(0))
    const [total, setTotal] = useState(fillDecimals(0))
@@ -185,6 +194,7 @@ const SalePage = () => {
 
       if (event.target.value !== '') {
          if (event.target.value > data.stockProduct) {
+            AlertSmall('info', 'No se puede agregar mas, ¡Limite de stock!')
             event.target.value = data.stockProduct
          } else if (event.target.value < 1) {
             event.target.value = 1
@@ -241,7 +251,7 @@ const SalePage = () => {
 
    const updateChange = () => {
       if (isNumeric(cashPayment)) {
-         let newChange = round2Decimals(cashPayment - Number(total))
+         let newChange = round2Decimals(cashPayment - Number(subTotal))
          setChange(fillDecimals(newChange))
       }
    }
@@ -252,7 +262,7 @@ const SalePage = () => {
             let newSaleData = saleData.slice()
             newSaleData.splice(index, 1)
             setSaleData(newSaleData)
-      
+
             let newSaleProducts = saleProducts.slice()
             newSaleProducts.splice(index, 1)
             setSaleProducts(newSaleProducts)
@@ -395,9 +405,9 @@ const SalePage = () => {
 
    const updateStock = (product: any, quantity: any) => {
       let newStock = product.stockProduct - quantity
-      if (newStock){
+      if (newStock) {
          product.stateProduct = true
-      }else{
+      } else {
          product.stateProduct = false
       }
       const prepareData = {
@@ -415,7 +425,7 @@ const SalePage = () => {
       }
       ipcRenderer.invoke('updateproductid', prepareData)
          .then(() => {
-         }).catch((err: any) => AlertSmall('error',  `Ha ocurrido un error, ${err}`))
+         }).catch((err: any) => AlertSmall('error', `Ha ocurrido un error, ${err}`))
    }
 
    const createOrder = (idPro: any, idSal: any, quantity: any) => {
@@ -431,89 +441,198 @@ const SalePage = () => {
          })
    }
 
+   class ComponentToPrint extends React.Component {
+      _getTime = (time: any) => {
+         var dateTime = new Date().toLocaleString();
+         return dateTime
+      }
+      render() {
+         return (
+            <div>
+               <header>
+                  <h3 style={{ textAlign: "center" }}>FRESCO</h3>
+               </header>
+               <div style={{ width: '100%', textAlign: "center" }}>
+                  Tienda de Abarrotes Fresco <br />
+                  Av. Amauta 1020 Urb. Pedro P.Diaz<br />
+                  Ca. Nicolas de Pierola <br />
+                  Arequipa - Arequipa - Paucarpata<br />
+                  TEL: 764 826 963 <br />
+                  RUC: 10294496098 <br />
+                  {saleVoucher.charAt(0).toUpperCase() + saleVoucher.slice(1)} de Venta Electronica
+               </div>
+               <br />
+               <div style={{ width: '100%', alignItems: "center", justifyContent: "center" }}>
+                  <table style={{ width: '100%', alignItems: "center", justifyContent: "center" }}>
+                     <tbody>
+                        <tr><td>DNI</td><td>{user.numdocUser}</td></tr>
+                        <tr><td>NOMBRE</td><td>{clientName ? clientName : 'CLIENTE VARIOS'}</td></tr>
+                        <tr><td>CAJERO</td><td>{user.nameUser.toUpperCase()}</td></tr>
+                        <tr><td>FECHA DE EMISION</td><td>{this._getTime(registro)}</td></tr>
+                     </tbody>
+                  </table>
+               </div>
+               <br />
+
+               <div>
+                  <table style={{ width: '100%' }}>
+                     <tbody>
+                        <tr style={{textAlign: 'left'}}>
+                           <th>DESCR.</th><th>CANT</th><th>P.UNIT</th><th>P.TOTAL</th>
+                        </tr>
+                        {
+                           saleData.map((p, index) => (
+                              <tr key={index}>
+                                 <td>{p.nameProduct}</td><td>{p.quantityProduct}</td><td>S/.{p.priceSellProduct}</td><td>S/.{p.amountProduct}</td>
+                              </tr>
+                           ))
+                        }
+                     </tbody>
+                  </table>
+               </div>
+               <br />
+               <div>
+                  <table style={{ width: '100%' }}>
+                     <tbody>
+                        <tr>
+                           <td>TOTAL:</td><td>S/.{subTotal}</td>
+                        </tr>
+                        <tr>
+                           <td>IGV:</td><td>S/.{igv}</td>
+                        </tr>
+                        <tr>
+                           <td>EFECTIVO:</td><td>S/.{parseFloat(`${cashPayment}` ? `${cashPayment}` : '0.00').toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                           <td>CAMBIO:</td><td>S/.{change}</td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+               <br />
+               <div style={{ textAlign: "center" }}>Gracias por comprar en Fresco</div>
+            </div>
+         )
+      }
+   }
+
+   const changeShow = () => {
+      if (showTicket) {
+         setShowTicket(false)
+      }
+      else {
+         setShowTicket(true)
+      }
+   }
+
+   const componentRef = React.useRef(null);
+   const handlePrint = useReactToPrint({
+      content: () => componentRef.current,
+   });
+
    return (
       <>
          <Grid container spacing={2}>
             <Grid item xs={8}>
-               <Card style={{ marginBottom: "8px" }}>
-                  <CardContent>
-                     <Grid container spacing={1}>
-                        <Grid item xs={10}>
-                           <Autocomplete
-                              classes={{
-                                 inputRoot: classes.inputRoot
-                              }}
-                              freeSolo
-                              autoComplete
-                              autoHighlight
-                              clearOnEscape
-                              getOptionSelected={(option, value) => option === value}
-                              getOptionLabel={(option) => option}
-                              options={searchOptions}
-                              onBlur={() => setSearchOptions([])}
-                              onInputChange={inputChangeSearch}
-                              renderInput={(params) => (
-                                 <TextField {...params}
-                                    variant="outlined"
-                                    placeholder="Ingrese el nombre o código de barra del Producto"
-                                    onKeyDown={onKeyDSField}
-                                    value={searchValue}
+
+               {showTicket ?
+                  <>
+                     <Card style={{ marginBottom: "8px" }}>
+                        <CardContent>
+                           <Grid container spacing={1}>
+                              <Grid item xs={10}>
+                                 <Autocomplete
+                                    classes={{
+                                       inputRoot: classes.inputRoot
+                                    }}
+                                    freeSolo
+                                    autoComplete
+                                    autoHighlight
+                                    clearOnEscape
+                                    getOptionSelected={(option, value) => option === value}
+                                    getOptionLabel={(option) => option}
+                                    options={searchOptions}
+                                    onBlur={() => setSearchOptions([])}
+                                    onInputChange={inputChangeSearch}
+                                    renderInput={(params) => (
+                                       <TextField {...params}
+                                          variant="outlined"
+                                          placeholder="Ingrese el nombre o código de barra del Producto"
+                                          onKeyDown={onKeyDSField}
+                                          value={searchValue}
+                                       />
+                                    )}
                                  />
-                              )}
-                           />
+                              </Grid>
+                              <Grid item xs={2}>
+                                 <Button variant="contained" color="primary" onClick={addSaleProduct}>Agregar</Button>
+                              </Grid>
+                           </Grid>
+                        </CardContent>
+                     </Card>
+                     <Card>
+                        <CardContent>
+                           <TableContainer>
+                              <Table>
+                                 <TableHead>
+                                    <TableRow>
+                                       <TableCell align="center">Item</TableCell>
+                                       <TableCell align="center">Cantidad</TableCell>
+                                       <TableCell align="center">Producto</TableCell>
+                                       <TableCell align="center">Precio Unidad</TableCell>
+                                       <TableCell align="center">Precio Venta</TableCell>
+                                       <TableCell align="center">Acciones</TableCell>
+                                    </TableRow>
+                                 </TableHead>
+                                 <TableBody>
+                                    {saleData.map((p, index) => (
+                                       <TableRow key={index}>
+                                          <TableCell align="center">{index + 1}</TableCell>
+                                          <TableCell align="center">
+                                             <TextField
+                                                value={p.quantityProduct}
+                                                type="number"
+                                                InputProps={{ inputProps: { min: 1, max: p.stockProduct } }}
+                                                onChange={(e) => handleQuantityProduct(e, index)}
+                                                onFocus={event => event.target.select()}
+                                             />
+                                          </TableCell>
+                                          <TableCell align="center">{p.nameProduct}</TableCell>
+                                          <TableCell align="center">{p.priceSellProduct}</TableCell>
+                                          <TableCell align="center">{p.amountProduct}</TableCell>
+                                          <TableCell align="center">
+                                             <Button variant="contained" color="secondary" onClick={() => deleteSaleProduct(index)}
+                                                classes={{
+                                                   startIcon: classes.nomargin,
+                                                   root: classes.rootbutton
+                                                }}
+                                                startIcon={<Delete />} />
+                                          </TableCell>
+                                       </TableRow>
+                                    ))}
+                                 </TableBody>
+                              </Table>
+                           </TableContainer>
+                        </CardContent>
+                     </Card>
+                  </>
+                  :
+                  <>
+                     <Grid container spacing={3}>
+                        <Grid item xs={6}>
+                           <Button fullWidth variant="contained" color="primary" onClick={changeShow} style={{ marginTop: '8px' }}>Volver a Compra</Button>
                         </Grid>
-                        <Grid item xs={2}>
-                           <Button variant="contained" color="primary" onClick={addSaleProduct}>Agregar</Button>
+                        <Grid item xs={6}>
+                           <Button fullWidth variant="contained" color="primary" onClick={handlePrint} style={{ marginTop: '8px' }}>Imprimir</Button>
+                        </Grid>
+                        <Grid className={classes.paper}>
+                           <Container maxWidth="sm">
+                              <ComponentToPrint ref={componentRef} />
+                           </Container>
                         </Grid>
                      </Grid>
-                  </CardContent>
-               </Card>
-
-               <Card>
-                  <CardContent>
-                     <TableContainer>
-                        <Table>
-                           <TableHead>
-                              <TableRow>
-                                 <TableCell align="center">Item</TableCell>
-                                 <TableCell align="center">Cantidad</TableCell>
-                                 <TableCell align="center">Producto</TableCell>
-                                 <TableCell align="center">Precio Unidad</TableCell>
-                                 <TableCell align="center">Precio Venta</TableCell>
-                                 <TableCell align="center">Acciones</TableCell>
-                              </TableRow>
-                           </TableHead>
-                           <TableBody>
-                              {saleData.map((p, index) => (
-                                 <TableRow key={index}>
-                                    <TableCell align="center">{index + 1}</TableCell>
-                                    <TableCell align="center">
-                                       <TextField
-                                          value={p.quantityProduct}
-                                          type="number"
-                                          InputProps={{ inputProps: { min: 1, max: p.stockProduct } }}
-                                          onChange={(e) => handleQuantityProduct(e, index)}
-                                          onFocus={event => event.target.select()}
-                                       />
-                                    </TableCell>
-                                    <TableCell align="center">{p.nameProduct}</TableCell>
-                                    <TableCell align="center">{p.priceSellProduct}</TableCell>
-                                    <TableCell align="center">{p.amountProduct}</TableCell>
-                                    <TableCell align="center">
-                                       <Button variant="contained" color="secondary" onClick={() => deleteSaleProduct(index)} 
-                                       classes={{
-                                          startIcon: classes.nomargin,
-                                          root: classes.rootbutton
-                                       }} 
-                                       startIcon={<Delete />} />
-                                    </TableCell>
-                                 </TableRow>
-                              ))}
-                           </TableBody>
-                        </Table>
-                     </TableContainer>
-                  </CardContent>
-               </Card>
+                  </>
+               }
             </Grid>
 
             <Grid item xs={4}>
@@ -611,6 +730,7 @@ const SalePage = () => {
                         </Grid>
                      </Grid>
 
+                     <Button fullWidth variant="contained" color="primary" onClick={changeShow} style={{ marginTop: '8px' }}>Preparar comprobante de pago</Button>
                      <Button fullWidth variant="contained" color="primary" onClick={createSale} style={{ marginTop: '8px' }}>Registrar Venta</Button>
                   </Grid>
                </Box>

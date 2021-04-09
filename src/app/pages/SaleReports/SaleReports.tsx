@@ -108,10 +108,11 @@ const SaleReports = () => {
    }, [])
 
    useEffect(() => {
-      console.log(pdfInfo)
+      //console.log(pdfInfo)
       let size = Object.keys(pdfInfo.sales).length
-      console.log('size: ', size)
-      if(size>0) console.log('ta lleno')
+      if(size > 0 ) console.log('Informacion recibida')
+      // eslint-disable-next-line
+      else if( inputSaleId.length == 0) console.log('Esperando para busqueda')
       else AlertSmall('info', 'No se han encontrado resultados para tu búsqueda.')
       // eslint-disable-next-line
    }, [pdfInfo])
@@ -128,7 +129,7 @@ const SaleReports = () => {
       setRevenueSales(round2Decimals(newNum))
       setTaxSales(round2Decimals(newTax))
       setSalesDB(sales)
-
+      // eslint-disable-next-line
       if (tos === 'all') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
@@ -138,6 +139,7 @@ const SaleReports = () => {
             dateTo: 'el final',
             quantityProducts: qp,
          })
+      // eslint-disable-next-line
       }else if (tos === 'date') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
@@ -147,6 +149,7 @@ const SaleReports = () => {
             dateTo: convertDateString(dateTo),
             quantityProducts: qp,
          })
+      // eslint-disable-next-line
       }else if (tos == 'id') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
