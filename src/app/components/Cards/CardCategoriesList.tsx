@@ -3,8 +3,9 @@ import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom'
 //import Icon from '@material-ui/core/Icon';
-import { Delete, Edit/*, Add*/ } from '@material-ui/icons';
+import { Delete, Edit } from '@material-ui/icons';
 import AlertSmall from '../Alert/AlertSmall'
+import AlertBig from '../Alert/AlertBig'
 import {
     Button,
     Box,
@@ -76,18 +77,22 @@ const CategoriesList = (props: { list: any; }) => {
     }
 
     const deleteCategory = (id: string) => {
-        const prepareData = {
-            Entry: {
-                value: id
-            },
-            spName: 'spDeleteCategory'
-        }
-        ipcRenderer.invoke('deletecategory', prepareData)
-            .then(() => {
-                AlertSmall('info', 'Se elimino correctamente')
-                getCategories()
-                setPage(0)
-            })
+        AlertBig('Estas seguro de eliminar la categoria?', 'La categoria sera eliminada de la lista!', 'warning', 'Si, deseo eliminarlo!').then((result: any) => {
+            if (result.isConfirmed) {
+                const prepareData = {
+                    Entry: {
+                        value: id
+                    },
+                    spName: 'spDeleteCategory'
+                }
+                ipcRenderer.invoke('deletecategory', prepareData)
+                    .then(() => {
+                        AlertSmall('info', 'Se elimino correctamente')
+                        getCategories()
+                        setPage(0)
+                    })
+            }
+        })
     }
 
     const handleChange = (e: any) => {

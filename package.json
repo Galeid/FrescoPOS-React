@@ -28,6 +28,7 @@
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
+    "react-to-print": "^2.12.3",
     "sweetalert2": "^10.15.6",
     "sweetalert2-react-content": "^3.3.1",
     "tedious": "^11.0.6",

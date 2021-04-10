@@ -2,14 +2,15 @@ import React, { useState, useEffect, useContext, useMemo } from 'react'
 import {
    Grid, Card, CardContent, Button, Table,
    TableBody, TableCell, TableContainer, TableHead, TableRow,
-   Typography, Divider, TextField, FormControlLabel, Checkbox
+   Typography, Divider, TextField, TablePagination
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 import { AuthContext } from '../../../services/AuthContext'
-
+import Search from '@material-ui/icons/Search';
+import AlertSmall from '../../components/Alert/AlertSmall'
 const { ipcRenderer } = window.require('electron')
 
 const useStyles = makeStyles(() => ({
@@ -23,6 +24,13 @@ const useStyles = makeStyles(() => ({
    tflabel: {
       transform: 'translate(10px, 12px) scale(1)'
    },
+   nomargin: {
+      margin: 0
+   },
+   rootbutton: {
+      minWidth: 'auto',
+      padding: '6px 8px 6px 8px'
+   }
 }));
 
 interface Sales {
@@ -72,9 +80,9 @@ const getTodayDate = () => {
 const SaleReports = () => {
    const classes = useStyles()
    const { user } = useContext(AuthContext)
-
+   const [page, setPage] = useState(0);
+   const [rowsPerPage, setRowsPerPage] = React.useState(5);
    const [inputSaleId, setInputSaleId] = useState('')
-
    const [salesDB, setSalesDB] = useState(salesFromDB)
    const [orderDB, setOrderDB] = useState(orderFromDB)
    const [orderData, setOrderData] = useState(orderDataOrigin)
@@ -100,7 +108,12 @@ const SaleReports = () => {
    }, [])
 
    useEffect(() => {
-      console.log(pdfInfo)
+      //console.log(pdfInfo)
+      let size = Object.keys(pdfInfo.sales).length
+      if(size > 0 ) console.log('Informacion recibida')
+      // eslint-disable-next-line
+      else if( inputSaleId.length == 0) console.log('Esperando para busqueda')
+      else AlertSmall('info', 'No se han encontrado resultados para tu búsqueda.')
       // eslint-disable-next-line
    }, [pdfInfo])
    
@@ -116,7 +129,7 @@ const SaleReports = () => {
       setRevenueSales(round2Decimals(newNum))
       setTaxSales(round2Decimals(newTax))
       setSalesDB(sales)
-
+      // eslint-disable-next-line
       if (tos === 'all') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
@@ -126,6 +139,7 @@ const SaleReports = () => {
             dateTo: 'el final',
             quantityProducts: qp,
          })
+      // eslint-disable-next-line
       }else if (tos === 'date') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
@@ -135,6 +149,7 @@ const SaleReports = () => {
             dateTo: convertDateString(dateTo),
             quantityProducts: qp,
          })
+      // eslint-disable-next-line
       }else if (tos == 'id') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
@@ -213,6 +228,14 @@ const SaleReports = () => {
             resetOrders()
          })
    }
+   const handleChangePage = (e : any, newPage : number) => {
+      setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (e : any) => {
+      setRowsPerPage(parseInt(e.target.value, 10));
+      setPage(0);
+  };
 
    return (
       <>
@@ -288,7 +311,9 @@ const SaleReports = () => {
                               </TableRow>
                            </TableHead>
                            <TableBody>
-                              {salesDB.map((s, index) => (
+                              {salesDB
+                              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                              .map((s, index) => (
                                  <TableRow hover key={index} onClick={() => getOrder(s)}>
                                     <TableCell align="center">{s.idSale}</TableCell>
                                     <TableCell align="center">{s.nameclientSale}</TableCell>
@@ -302,6 +327,17 @@ const SaleReports = () => {
                            </TableBody>
                         </Table>
                      </TableContainer>
+                     <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, salesDB.length]}
+                        component="div"
+                        count={salesDB.length}
+                        //count={productDB.length === -1 ? 1 * 10 + 1 : productDB.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        //page={( page > 0 && productDB.length === rowsPerPage ) ? 0 : page}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
                   </CardContent>
                </Card>
             </Grid>
@@ -314,17 +350,24 @@ const SaleReports = () => {
                </Card>
                <Card className={classes.root} style={{ marginBottom: '8px' }}>
                   <CardContent>
-                     <TextField 
-                        fullWidth
-                        InputProps={{ classes: { input: classes.tfInputmargin } }}
-                        InputLabelProps={{ classes: { outlined: classes.tflabel } }}
-                        variant="outlined"
-                        placeholder="Ingrese un ID"
-                        value={inputSaleId}
-                        onChange={inputChangeId}
-                        style={{ marginRight: '4px'}}
-                     />
-                     <Button fullWidth variant="contained" color="primary" onClick={searchSaleId}>Buscar por ID</Button>
+                  <Grid container spacing={1}>
+                        <Grid item xs={10}>
+                           <TextField 
+                              fullWidth
+                              InputProps={{ classes: { input: classes.tfInputmargin } }}
+                              InputLabelProps={{ classes: { outlined: classes.tflabel } }}
+                              type="number"
+                              variant="outlined"
+                              placeholder="Ingrese un ID"
+                              value={inputSaleId}
+                              onChange={inputChangeId}
+                              style={{ marginRight: '4px'}}
+                           />
+                        </Grid>
+                        <Grid item xs={2}>
+                           <Button fullWidth variant="contained" classes={{startIcon: classes.nomargin, root: classes.rootbutton}} color="primary" onClick={searchSaleId}><Search /></Button>
+                        </Grid>
+                     </Grid>
                   </CardContent>
                </Card>
                <Card className={classes.root}>

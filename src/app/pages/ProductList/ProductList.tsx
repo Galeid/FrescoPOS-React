@@ -101,8 +101,8 @@ const ProductList = () => {
                         getProducts()
                         setPage(0)
                     })
-                }
-            })
+            }
+        })
     }
 
     const handleChange = (e: any) => {

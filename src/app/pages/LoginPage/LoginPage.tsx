@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 //import { ipcRenderer as ipc } from 'electron';
 
-
+import AlertSmall from '../../components/Alert/AlertSmall'
 import { AuthContext } from '../../../services/AuthContext';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -58,27 +58,33 @@ const LoginPage = () => {
    };
 
    const validateUser = () => {
-      const prepareData = {
-         Nameuser: {
-            value: form.username
-         },
-         Passworduser: {
-            value: form.password
-         },
-         spName: 'spValidateUser'
-      }
+      if (form.username.length === 0 && form.password.length === 0) AlertSmall('info', 'Formulario vacio')
+      else if (form.username === '') AlertSmall('info', 'Llena el campo de usuario.')
+      else if(form.password === '') AlertSmall('info', 'Llena el campo de contraseña.')
+      else {
+         const prepareData = {
+            Nameuser: {
+               value: form.username
+            },
+            Passworduser: {
+               value: form.password
+            },
+            spName: 'spValidateUser'
+         }
 
-      ipcRenderer.invoke('validateuser', prepareData)
-         .then((user: any) => {
-            userLogged = user.slice()
-            if (userLogged.length > 0) {
-               setUser(userLogged[0]) 
-               console.log(userLogged[0])
-               history.push('/dashboard');
-            } else {
-               console.log('validateUser(): El usuario no se encuentra en la base de datos')
-            }
-         })
+         ipcRenderer.invoke('validateuser', prepareData)
+            .then((user: any) => {
+               userLogged = user.slice()
+               if (userLogged.length > 0) {
+                  setUser(userLogged[0]) 
+                  //console.log(userLogged[0])
+                  history.push('/dashboard');
+               } else {
+                  AlertSmall('error', 'El usuario no se encuentra en la base de datos')
+                  //console.log('validateUser(): El usuario no se encuentra en la base de datos')
+               }
+            }).catch((err: any) => AlertSmall('error', `Ha ocurrido un error, ${err}`))
+      }
    }
 
    const loginButton = (event: { preventDefault: () => void; }) => {

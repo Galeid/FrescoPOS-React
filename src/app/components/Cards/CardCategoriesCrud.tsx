@@ -76,10 +76,7 @@ const CategoriesCrud = (props: { idCategory: any; }) => {
                     console.log(category)
                     cleanInputs()
                     AlertSmall('success', 'Se agrego la categoria con exito')
-                }).catch((err: any) => {
-                    console.log(err)
-                    AlertSmall('error', 'Ha ocurrido un error')
-                })
+                }).catch((err: any) => AlertSmall('error', `Ha ocurrido un error, ${err}`))
         } else {
             AlertSmall('error', 'Debe llenar el campo de nombre primero')
         }
