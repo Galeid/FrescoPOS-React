@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent, Typography, Button, Grid,
    TableContainer, Table, TableHead, TableRow, TableCell,
-   TableBody, Chip } from '@material-ui/core'
+   TableBody, Chip, Tooltip } from '@material-ui/core'
 import { Delete, Edit, Add, Block } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom'
@@ -156,42 +156,48 @@ const UserCrud = () => {
                            <TableCell align="center">
                               <Grid container spacing={2}>
                                  <Grid item xs={4}>
-                                    <Button
-                                       variant="contained"
-                                       color="default"
-                                       startIcon={<Edit />}
-                                       classes={{
-                                          startIcon: classes.nomargin,
-                                          root: classes.rootbutton
-                                       }}
-                                       onClick={() => {
-                                       history.push(`/usersDetails/${u.idUser}`)
-                                       }}
-                                    />
+                                    <Tooltip title="Editar" placement="top">
+                                       <Button
+                                          variant="contained"
+                                          color="default"
+                                          startIcon={<Edit />}
+                                          classes={{
+                                             startIcon: classes.nomargin,
+                                             root: classes.rootbutton
+                                          }}
+                                          onClick={() => {
+                                          history.push(`/usersDetails/${u.idUser}`)
+                                          }}
+                                       />
+                                    </Tooltip>
                                  </Grid>
                                  <Grid item xs={4}>
-                                    <Button
-                                       variant="contained"
-                                       color="secondary"
-                                       onClick={() => changeStateUser(u)}
-                                       classes={{
-                                          startIcon: classes.nomargin,
-                                          root: classes.rootbutton
-                                       }}
-                                       startIcon={<Block />}
-                                    />
+                                    <Tooltip title="Bloquear Acceso" placement="top">
+                                       <Button
+                                          variant="contained"
+                                          color="secondary"
+                                          onClick={() => changeStateUser(u)}
+                                          classes={{
+                                             startIcon: classes.nomargin,
+                                             root: classes.rootbutton
+                                          }}
+                                          startIcon={<Block />}
+                                       />
+                                    </Tooltip>
                                  </Grid>
                                  <Grid item xs={4}>
-                                    <Button
-                                       variant="contained"
-                                       color="secondary"
-                                       onClick={() => deleteUser(u)}
-                                       classes={{
-                                          startIcon: classes.nomargin,
-                                          root: classes.rootbutton
-                                       }}
-                                       startIcon={<Delete />}
-                                    />
+                                    <Tooltip title="Eliminar" placement="top">
+                                       <Button
+                                          variant="contained"
+                                          color="secondary"
+                                          onClick={() => deleteUser(u)}
+                                          classes={{
+                                             startIcon: classes.nomargin,
+                                             root: classes.rootbutton
+                                          }}
+                                          startIcon={<Delete />}
+                                       />
+                                    </Tooltip>
                                  </Grid>
                               </Grid>
                            </TableCell>

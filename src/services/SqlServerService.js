@@ -449,6 +449,57 @@ const searchSaleId = (event, args) => {
     })
 }
 
+const checkLastShift = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
+const createShift = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Startshift.type = TYPES.DateTime
+                args.Endshift.type = TYPES.DateTime
+                args.Iduser.type = TYPES.Int
+                return updateDb(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
+const listShifts = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
+const updateShift = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Startshift.type = TYPES.DateTime
+                args.Endshift.type = TYPES.DateTime || TYPES.Null
+                args.Iduser.type = TYPES.Int
+                args.Idshift.type = TYPES.Int
+                return updateDb(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -474,3 +525,8 @@ ipcMain.handle('getsales', getSales)
 ipcMain.handle('getorders', getOrders)
 ipcMain.handle('searchsales', searchSales)
 ipcMain.handle('searchsaleid', searchSaleId)
+
+ipcMain.handle('checklastshift', checkLastShift)
+ipcMain.handle('createshift', createShift)
+ipcMain.handle('listshifts', listShifts)
+ipcMain.handle('updateshift', updateShift)

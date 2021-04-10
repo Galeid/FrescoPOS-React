@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -8,6 +8,7 @@ import {
    List,
    ListItemIcon,
    ListItemText,
+   Button
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../../services/AuthContext';
@@ -21,6 +22,8 @@ import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Category from '@material-ui/icons/Category';
 import AirportShuttle from '@material-ui/icons/AirportShuttle';
 import Assignment from '@material-ui/icons/Assignment';
+
+const { ipcRenderer } = window.require('electron')
 
 const sideBarWidth = 240
 const useStyles = makeStyles({
@@ -44,12 +47,18 @@ const useStyles = makeStyles({
    paper: {
       textAlign: 'center',
    },
+   buttonShift: {
+      marginTop: '16px',
+      marginLeft: '30px',
+      marginRight: '30px',
+   }
 });
 
 const SideBar = () => {
    const { user } = useContext(AuthContext)
    let history = useHistory();
    const classes = useStyles();
+   const [inShift, setInShift] = useState(false)
 
    const itemsList = [
       {
@@ -71,6 +80,12 @@ const SideBar = () => {
          userRole: [1]
       },
       {
+         text: 'Detalle de los Turnos',
+         icon: <AssignmentInd className={classes.itemIcon} />,
+         onClick: () => history.push('/shifts'),
+         userRole: [1]
+      },
+      {
          text: 'Categorías',
          icon: <Category className={classes.itemIcon} />,
          onClick: () => history.push('/categories'),
@@ -89,6 +104,88 @@ const SideBar = () => {
          userRole: [1, 2]
       }
    ];
+
+   useEffect(() => {
+      checkShift()
+      // eslint-disable-next-line
+   }, [])
+
+   const checkShift = () => {
+      const prepareData = {
+         spName: 'spCheckLastShift'
+      }
+      ipcRenderer.invoke('checklastshift', prepareData)
+         .then((shifts: any) => {
+            if(shifts[0]) {
+               if (shifts[0].endShift == null){
+                  //caso si no se finalizó el ultimo turno
+                  setInShift(true)
+               } else {
+                  //caso si se finalizó el ultimo turno
+                  setInShift(false)
+               }
+            } else {
+               //caso si no existe
+               setInShift(false)
+            }
+         })
+   }
+
+   const changeShifts = () => {
+      const prepareData = {
+         spName: 'spCheckLastShift'
+      }
+      ipcRenderer.invoke('checklastshift', prepareData)
+         .then((shifts: any) => {
+            if(shifts[0]) {
+               if (shifts[0].endShift == null){
+                  //caso si no se finalizó el ultimo turno
+                  let inicio = shifts[0].startShift
+                  let fin = new Date()
+                  let idu = shifts[0].idUser
+                  let id = shifts[0].idShift
+                  updateShift(inicio, fin, id, idu)
+                  setInShift(false)
+               } else {
+                  //caso si se finalizó el ultimo turno
+                  createShift()
+                  setInShift(true)
+               }
+            } else {
+               //caso si no existe
+               createShift()
+               setInShift(true)
+            }
+         })
+   }
+
+   const createShift = () => {
+      let fecha = new Date()
+      const prepareData = {
+         Startshift: { value: fecha },
+         Endshift: { value: null },
+         Iduser: { value: user.idUser },
+         spName: 'spCreateShift'
+      }
+      ipcRenderer.invoke('createshift', prepareData)
+         .then((message: any) => {
+            console.log('ALERTAAAAAAAAAAAA create')
+         })
+   }
+
+   const updateShift = (inicioSh: any, finSh: any, idSh: any, idUs: any) => {
+      const prepareData = {
+         Startshift: { value: inicioSh },
+         Endshift: { value: finSh },
+         Iduser: { value: idUs },
+         Idshift: { value: idSh },
+         spName: 'spUpdateShift'
+      }
+      ipcRenderer.invoke('updateshift', prepareData)
+         .then((message: any) => {
+            console.log('ALERTAAAAAAAAAAAA update')
+         })
+   }
 
    return (
       <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.paperDrawer }} anchor="left">
@@ -121,6 +218,7 @@ const SideBar = () => {
                );
             })}
          </List>
+         <Button variant="contained" color="primary" className={classes.buttonShift} onClick={changeShifts}>{inShift ? 'Terminar turno':'Iniciar turno'}</Button>
       </Drawer>
    );
 };

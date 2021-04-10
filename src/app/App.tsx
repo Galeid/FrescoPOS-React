@@ -20,6 +20,7 @@ import Categories from './pages/Categories/Categories';
 //Context and Styles
 import { AuthContext } from '../services/AuthContext';
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import ShiftsList from './pages/ShiftsList/ShiftsList';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -92,6 +93,7 @@ const App = () => {
                                 <Route path="/sale" component={SalePage} />
                                 <Route path="/usersDetails/:idUser" component={UserDetail} />
                                 <Route path="/users" component={UserCrud}/>
+                                <Route path="/shifts" component={ShiftsList}/>
                                 <Route path="/dashboard" component={MainPage} />
                                 <Route path="/" exact={true} component={LoginPage} />
                             </Switch>
