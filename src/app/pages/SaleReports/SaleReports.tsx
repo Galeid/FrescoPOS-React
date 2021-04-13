@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react'
 import {
    Grid, Card, CardContent, Button, Table,
    TableBody, TableCell, TableContainer, TableHead, TableRow,
-   Typography, Divider, TextField, TablePagination
+   Typography, Divider, TextField, TablePagination, Tooltip
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -11,6 +11,10 @@ import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-
 import { AuthContext } from '../../../services/AuthContext'
 import Search from '@material-ui/icons/Search';
 import AlertSmall from '../../components/Alert/AlertSmall'
+import RedoIcon from '@material-ui/icons/Redo';
+
+import { useHistory } from 'react-router-dom'
+
 const { ipcRenderer } = window.require('electron')
 
 const useStyles = makeStyles(() => ({
@@ -59,6 +63,7 @@ let orderDataOrigin = {
    orderUser: '-',
    orderWay: '-',
    orderState: '-',
+   orderTax: '-',
 }
 
 const round2Decimals = (num: any) => {
@@ -78,6 +83,8 @@ const getTodayDate = () => {
 }
 
 const SaleReports = () => {
+   let history = useHistory()
+
    const classes = useStyles()
    const { user } = useContext(AuthContext)
    const [page, setPage] = useState(0);
@@ -194,6 +201,7 @@ const SaleReports = () => {
                orderUser: s.nameUser + '',
                orderWay: s.waytopaySale + '',
                orderState: s.stateSale ? 'Activo' : 'Inactivo',
+               orderTax: s.taxSale + ''
             }
             setOrderData(orderNewData)
             setOrderDB(orders)
@@ -216,6 +224,7 @@ const SaleReports = () => {
    const searchSaleId = () => {
       if (inputSaleId === '') {
          getSales()
+         console.log('ALERTAAAAA')
          return
       }
       const prepareData = {
@@ -230,12 +239,16 @@ const SaleReports = () => {
    }
    const handleChangePage = (e : any, newPage : number) => {
       setPage(newPage);
-  };
+   };
 
-  const handleChangeRowsPerPage = (e : any) => {
+   const handleChangeRowsPerPage = (e : any) => {
       setRowsPerPage(parseInt(e.target.value, 10));
       setPage(0);
-  };
+   };
+
+   const goRefund = ( id: any ) => {
+      history.push(`/refund/${id}`)
+   }
 
    return (
       <>
@@ -303,11 +316,11 @@ const SaleReports = () => {
                               <TableRow>
                                  <TableCell align="center">Id</TableCell>
                                  <TableCell align="center">Cliente</TableCell>
-                                 <TableCell align="center">N° Productos</TableCell>
+                                 <TableCell align="center">Prod.</TableCell>
                                  <TableCell align="center">Voucher</TableCell>
                                  <TableCell align="center">Total</TableCell>
-                                 <TableCell align="center">Impuestos</TableCell>
                                  <TableCell align="center">Fecha</TableCell>
+                                 <TableCell align="center">Opc.</TableCell>
                               </TableRow>
                            </TableHead>
                            <TableBody>
@@ -320,8 +333,12 @@ const SaleReports = () => {
                                     <TableCell align="center">{s.qproductsSale}</TableCell>
                                     <TableCell align="center">{s.voucherSale}</TableCell>
                                     <TableCell align="center">S/ {s.subtotalSale}</TableCell>
-                                    <TableCell align="center">S/ {s.taxSale}</TableCell>
                                     <TableCell align="center">{convertDateString(s.dateSale)}</TableCell>
+                                    <TableCell align="center">
+                                       <Tooltip title="Devoluciones">
+                                          <Button variant="contained" classes={{startIcon: classes.nomargin, root: classes.rootbutton}} color="primary" onClick={()=> goRefund(s.idSale)}><RedoIcon /></Button>
+                                       </Tooltip>
+                                    </TableCell>
                                  </TableRow>
                               ))}
                            </TableBody>
@@ -373,8 +390,10 @@ const SaleReports = () => {
                <Card className={classes.root}>
                   <CardContent>
                      <Typography variant="h6">Código de la Venta: {orderData.orderCode}</Typography>
+                     <Divider />
                      <Typography variant="subtitle2">Vendedor: {orderData.orderUser}</Typography>
                      <Typography variant="subtitle2">Metodo de Pago: {orderData.orderWay}</Typography>
+                     <Typography variant="subtitle2">Impuestos: S/ {orderData.orderTax}</Typography>
                      <Typography variant="subtitle2" style={{ marginBottom: '8px' }}>Estado: {orderData.orderState}</Typography>
                      <Divider />
                      <Typography variant="h6" style={{ marginTop: '8px' }}>Lista de Productos:</Typography>

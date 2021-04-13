@@ -21,6 +21,7 @@ import Categories from './pages/Categories/Categories';
 import { AuthContext } from '../services/AuthContext';
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import ShiftsList from './pages/ShiftsList/ShiftsList';
+import RefundPage from './pages/RefundPage/RefundPage';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -94,6 +95,7 @@ const App = () => {
                                 <Route path="/usersDetails/:idUser" component={UserDetail} />
                                 <Route path="/users" component={UserCrud}/>
                                 <Route path="/shifts" component={ShiftsList}/>
+                                <Route path="/refund/:idSale" component={RefundPage}/>
                                 <Route path="/dashboard" component={MainPage} />
                                 <Route path="/" exact={true} component={LoginPage} />
                             </Switch>

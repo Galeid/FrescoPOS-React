@@ -500,6 +500,19 @@ const updateShift = (event, args) => {
     })
 }
 
+const updateNewIdSale = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Idsale.type = TYPES.Int
+                args.Idnewsale.type = TYPES.Int
+                return updateDb(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+    })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -530,3 +543,5 @@ ipcMain.handle('checklastshift', checkLastShift)
 ipcMain.handle('createshift', createShift)
 ipcMain.handle('listshifts', listShifts)
 ipcMain.handle('updateshift', updateShift)
+
+ipcMain.handle('updatenewidsale', updateNewIdSale)

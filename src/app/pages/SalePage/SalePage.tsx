@@ -16,7 +16,6 @@ import AlertBig from '../../components/Alert/AlertBig'
 
 const { ipcRenderer } = window.require('electron')
 
-
 interface Product {
    idProduct: any,
    barcodeProduct: any,
@@ -101,8 +100,6 @@ const useStyles = makeStyles({
    },
    input: {},
 })
-
-
 
 const SalePage = () => {
    let registro: Date = new Date();
