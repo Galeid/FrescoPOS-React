@@ -18,11 +18,28 @@ const useStyles = makeStyles(() => ({
     },
     toolbar:{
         backgroundColor: '#52616b',
+    },
+    caja: {
+        marginRight: '48px',
     }
 }));
 
+const fillDecimals = (number: number) => {
+    function pad(input: any, length: any, padding: any): any {
+        let str = input + '';
+        return (length <= str.length) ? str : pad(str + padding, length, padding);
+    }
+    let str = number + '';
+    let dot = str.lastIndexOf('.');
+    let isDecimal = dot !== -1;
+    let integer = isDecimal ? str.substr(0, dot) : str;
+    let decimals = isDecimal ? str.substr(dot + 1) : '';
+    decimals = pad(decimals, 2, 0);
+    return integer + '.' + decimals;
+}
+
 const HeaderBody = () => {
-    const { user, setUser } = useContext(AuthContext)
+    const { user, setUser, caja, setCaja } = useContext(AuthContext)
     const classes = useStyles();
     let history = useHistory()
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -48,6 +65,7 @@ const HeaderBody = () => {
             {
                 user ?
                     <>
+                        <Typography variant="h6" className={classes.caja}>S/ {fillDecimals(caja)}</Typography>
                         <Typography variant="h6" className={classes.name}>
                             {user.nameUser.charAt(0).toUpperCase() + user.nameUser.substring(1)}
                         </Typography>
@@ -68,9 +86,7 @@ const HeaderBody = () => {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Fade}
-
             >
-                <MenuItem onClick={handleClose}>Mi perfil (No disponible)</MenuItem>
                 <MenuItem onClick={handleClose}>Mi cuenta (No disponible)</MenuItem>
                 <MenuItem onClick={handleClickLogout}>Cerrar Sesion</MenuItem>
             </Menu>

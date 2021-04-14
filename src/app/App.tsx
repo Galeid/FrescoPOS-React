@@ -1,5 +1,5 @@
 //React Libraries
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 
 //Components Used
@@ -22,7 +22,7 @@ import { AuthContext } from '../services/AuthContext';
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import ShiftsList from './pages/ShiftsList/ShiftsList';
 import RefundPage from './pages/RefundPage/RefundPage';
-
+const { ipcRenderer } = window.require('electron')
 
 const useStyles = makeStyles((theme) => ({
     app: {
@@ -65,9 +65,62 @@ const theme = createMuiTheme({
   },
 });
 
+const fillDecimals = (number: number) => {
+    function pad(input: any, length: any, padding: any): any {
+        let str = input + '';
+        return (length <= str.length) ? str : pad(str + padding, length, padding);
+    }
+    let str = number + '';
+    let dot = str.lastIndexOf('.');
+    let isDecimal = dot !== -1;
+    let integer = isDecimal ? str.substr(0, dot) : str;
+    let decimals = isDecimal ? str.substr(dot + 1) : '';
+    decimals = pad(decimals, 2, 0);
+    return integer + '.' + decimals;
+}
+
 const App = () => {
     const [user, setUser] = useState(null);
-    const authProviderValue = useMemo(() => ({ user, setUser }), [user, setUser])
+    const [caja, setCaja] = useState(0);
+    const [aux, setAux] = useState(true)
+
+    useEffect(() => {
+        console.log('c')
+        getCash()
+    }, [])
+
+    useEffect(() => {
+        if (!aux) {
+            updateCash(caja)
+        } else {
+            setAux(false)
+        }
+    }, [caja])
+
+    const updateCash = ( cajaVal: any) => {
+        const prepareData = {
+            Entry: { value: fillDecimals(cajaVal) },
+            spName: 'spUpdateCash'
+        }
+        ipcRenderer.invoke('updatecash', prepareData)
+            .then((message:any) => {
+                console.log(message)
+            })
+    }
+
+    const getCash = () => {
+        console.log('a2')
+        const prepareData = {
+            spName: 'spGetCash'
+        }
+        ipcRenderer.invoke('getcash', prepareData)
+            .then((cash:any) => {
+                console.log(cash)
+                setCaja(Number(cash[0].valueVariable))/////
+            })
+    }
+
+    const authProviderValue = useMemo(() => ({ user, setUser, caja, setCaja }), [user, setUser, caja, setCaja])
 
     const classes = useStyles()
 
