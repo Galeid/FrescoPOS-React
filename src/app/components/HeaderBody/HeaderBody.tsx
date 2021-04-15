@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
         alignContent: 'right'
     },
     toolbar:{
-        backgroundColor: '#52616b',
+        backgroundColor: '#3c3c3c',
     },
     caja: {
         marginRight: '48px',

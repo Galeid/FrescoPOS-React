@@ -15,12 +15,23 @@ import Assignment from '@material-ui/icons/Assignment'
 import Build from '@material-ui/icons/Build'
 import Class from '@material-ui/icons/Class'
 
-import CardsHeader from '../../components/Cards/CardsHeader';
+import CardsHeader from '../../components/Cards/Dashboard/CardsHeader'
+import CardsWelcome from '../../components/Cards/Dashboard/CardsWelcome'
 
+import urlProduct from '../../assets/Dashboard/GroceryShoppingIllustration.svg'
+import urlSale from '../../assets/Dashboard/YoungManWorkingAsACashier.svg'
+import urlCategory from '../../assets/Dashboard/WomanWithAnEcoFriendlyBagAtFoodStore.svg'
+import urlStatistics from '../../assets/Dashboard/DevelopMoneyInvestment.svg'
+import urlPurchaseOrder from '../../assets/Dashboard/DeliveryManAndCustomerOrderFood.svg'
+import urlSupplier from '../../assets/Dashboard/BasketAndShoppingCartFilledWithProductsAndEmpty.svg'
+import urlEmployee from '../../assets/Dashboard/ManUsingFaceMaskWithSalesman.svg'
+import urlReport from '../../assets/Dashboard/AccountingWithSheetCalculatorsBookkeepingReport.svg'
+import urlSupport from '../../assets/Dashboard/EngineerManDesignWorkerProfession.svg'
+//import imgBackDash from '../../assets/Dashboard/BackgroundDashboard.svg'
 
 const useStyles = makeStyles(() => ({
    root: {
-      flexGrow: 1
+      flexGrow: 1,
    },
    iconos: {
       color: 'white'
@@ -45,7 +56,7 @@ const MainPage = () => {
    const classes = useStyles();
    const { user /*, setUser*/ } = useContext(AuthContext)
    let history = useHistory()
-
+   //const background = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgyWX6cbki1kb-4KGY5HXReTFzFIDPMYVZ6ZPWPh57LovxCY-5zSphka5h4UlxLF7GjYs&usqp=CAU'
    /*function handleClick() {
       setUser('')
       history.goBack();
@@ -62,87 +73,104 @@ const MainPage = () => {
    const itemsList = [
       {
          title: 'Productos',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <AirportShuttle className={classes.itemIcon} />,
+         url: urlProduct,
+         color: '2A265F',
          onClick: () => history.push('/products'),
-         userRole: [1,2,3]
+         userRole: [1, 2, 3]
       },
       {
-         title: 'Ventas (Beta)',
-         text: 'Ver',
+         title: 'Ventas',
+         text: 'Mostrar contenido',
          icon: <MonetizationOn className={classes.itemIcon} />,
+         url: urlSale,
+         color: '2A265F',
          onClick: () => history.push('/sale'),
-         userRole: [1,2]
+         userRole: [1, 2]
       },
       {
          title: 'Categorias',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <Class className={classes.itemIcon} />,
+         url: urlCategory,
+         color: '2A265F',
          onClick: () => history.push('/categories'),
          userRole: [1]
       },
       {
          title: 'Estadisticas',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <ShowChart className={classes.itemIcon} />,
+         url: urlStatistics,
+         color: '2A265F',
          onClick: () => {
             history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1,2]
+         userRole: [1, 2]
       },
       {
          title: 'Orden de Compra',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <AttachMoney className={classes.itemIcon} />,
+         url: urlPurchaseOrder,
+         color: '2A265F',
          onClick: () => {
             history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1,2,3]
+         userRole: [1, 2, 3]
       },
       {
          title: 'Proveedores',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <LocalShipping className={classes.itemIcon} />,
+         url: urlSupplier,
+         color: '2A265F',
          onClick: () => {
             history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1,2,3]
+         userRole: [1, 2, 3]
       },
       {
          title: 'Mi Personal',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <Accessibility className={classes.itemIcon} />,
+         url: urlEmployee,
+         color: '2A265F',
          onClick: () => {
             history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1,2,3]
+         userRole: [1, 2, 3]
       },
       {
          title: 'Reportes',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <Assignment className={classes.itemIcon} />,
+         url: urlReport,
+         color: '2A265F',
          onClick: () => {
             history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1,2,3]
+         userRole: [1, 2, 3]
       },
       {
          title: 'Soporte',
-         text: 'Ver',
+         text: 'Mostrar contenido',
          icon: <Build className={classes.itemIcon} />,
+         url: urlSupport,
+         color: '2A265F',
          onClick: () => {
             history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1,2,3]
+         userRole: [1, 2, 3]
       }
    ];
-   //sm={4} md={4} lg={4} xl={4}
    return (user ?
       <>
          {/*
@@ -150,22 +178,25 @@ const MainPage = () => {
                Good morning Mr {user.nameUser}
                <button type="button" style={{ height: 20 }} onClick={handleClick}>Go Back</button>
             </Grid>
+             width: '100%', height: '100%'
          */}
-         <div className={classes.root}>
-            <Grid container item={true} xs={12} spacing={3} direction="row" justify="space-evenly" alignItems="baseline">
+         <Grid container item={true} spacing={3} justify="space-evenly" >
+            <div style={{width: '90%'}}>
+               <CardsWelcome user={user} />
+            </div>
+            <Grid container item={true} xs={12} spacing={2} direction="row" justify="space-evenly" alignItems="baseline">
                {itemsList.map((item) => {
-                  const { icon, title, text, onClick, userRole } = item;
+                  const { icon, title, text, url, color, onClick, userRole } = item;
                   let visibility = false
                   if (userRole.includes(user.idRole)) visibility = true
                   return visibility && (
-                     <Grid item key={title} xs={6} sm={3} >
-                        <CardsHeader icono={icon} titulo={title} texto={text} onClick={onClick} font="white" />
+                     <Grid item key={title} >
+                        <CardsHeader icono={icon} titulo={title} texto={text} url={url} color={color} onClick={onClick} />
                      </Grid>
                   )
                })}
-
             </Grid>
-         </div>
+         </Grid>
       </>
       : handleClick2()
    )
