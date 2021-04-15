@@ -105,10 +105,9 @@ const MainPage = () => {
          url: urlStatistics,
          color: '2A265F',
          onClick: () => {
-            history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1, 2]
+         userRole: [1]
       },
       {
          title: 'Orden de Compra',
@@ -117,7 +116,6 @@ const MainPage = () => {
          url: urlPurchaseOrder,
          color: '2A265F',
          onClick: () => {
-            history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1, 2, 3]
@@ -129,7 +127,6 @@ const MainPage = () => {
          url: urlSupplier,
          color: '2A265F',
          onClick: () => {
-            history.push('/dashboard')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1, 2, 3]
@@ -141,10 +138,10 @@ const MainPage = () => {
          url: urlEmployee,
          color: '2A265F',
          onClick: () => {
-            history.push('/dashboard')
+            history.push('/users')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1, 2, 3]
+         userRole: [1]
       },
       {
          title: 'Reportes',
@@ -153,10 +150,10 @@ const MainPage = () => {
          url: urlReport,
          color: '2A265F',
          onClick: () => {
-            history.push('/dashboard')
+            history.push('/saleReports')
             AlertSmall('info', 'En construccion, no disponible por el momento')
          },
-         userRole: [1, 2, 3]
+         userRole: [1, 2]
       },
       {
          title: 'Soporte',
@@ -165,8 +162,7 @@ const MainPage = () => {
          url: urlSupport,
          color: '2A265F',
          onClick: () => {
-            history.push('/dashboard')
-            AlertSmall('info', 'En construccion, no disponible por el momento')
+            AlertSmall('info', 'Llame a Brucce al: 999 999 999')
          },
          userRole: [1, 2, 3]
       }
