@@ -82,6 +82,8 @@ const CardProductDetails = (props: { idProduct: any; }) => {
 
     const insertProducts = () => {
         console.log('insertProducts')
+        let registrod = registro
+        registrod.setUTCHours(registrod.getUTCHours() - 5)
         const prepareData = {
             IdCategory: { value: productDB.idCategory },
             Barcode: { value: productDB.barcodeProduct },
@@ -89,7 +91,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             StockProduct: { value: productDB.stockProduct },
             PriceSellProduct: { value: productDB.priceSellProduct },
             PriceBuyProduct: { value: productDB.priceBuyProduct },
-            DateProduct: { value: registro },
+            DateProduct: { value: registrod },
             DescriptionProduct: { value: productDB.descriptionProduct === '' ? 'No hay notas' : productDB.descriptionProduct },
             StateProduct: { value: productDB.stateProduct },
             spName: 'spInsertProduct'
@@ -110,6 +112,8 @@ const CardProductDetails = (props: { idProduct: any; }) => {
     }
     //var registro = Date.now();
     const updateProductsId = () => {
+        let registrod = registro
+        registrod.setUTCHours(registrod.getUTCHours() - 5)
         const prepareData = {
             IdCategory: { value: productDB.idCategory },
             Barcode: { value: productDB.barcodeProduct },
@@ -117,7 +121,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
             StockProduct: { value: productDB.stockProduct },
             PriceSellProduct: { value: productDB.priceSellProduct },
             PriceBuyProduct: { value: productDB.priceBuyProduct },
-            DateProduct: { value: registro },
+            DateProduct: { value: registrod },
             DescriptionProduct: { value: productDB.descriptionProduct },
             StateProduct: { value: productDB.stateProduct },
             IdProduct: { value: productDB.idProduct },

@@ -224,7 +224,7 @@ const SaleReports = () => {
    const searchSaleId = () => {
       if (inputSaleId === '') {
          getSales()
-         console.log('ALERTAAAAA')
+         AlertSmall('info','Ingrese por favor un id')
          return
       }
       const prepareData = {

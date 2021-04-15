@@ -87,7 +87,7 @@ const useStyles = makeStyles({
 const RefundPage = () => {
    let history = useHistory()
    const classes = useStyles()
-   const { user } = useContext(AuthContext)
+   const { user, caja, setCaja } = useContext(AuthContext)
 
    const { idSale } = useParams<{ idSale: string }>();
    const [saleDB, setSaleDB] = useState(saleRefund)
@@ -176,7 +176,8 @@ const RefundPage = () => {
                //setCashPayment(sales[0].cashSale)
                return
             }
-            console.log('ALERTAAAAA')
+            AlertSmall('error', 'No se encuentra la venta')
+            history.push('/')
          })
    }
 
@@ -193,8 +194,23 @@ const RefundPage = () => {
          })
    }
 
-   const createRefund = () => {
+   const checkLastShift = () => {
+      const prepareData = {
+         spName: 'spCheckLastShift'
+      }
+      ipcRenderer.invoke('checklastshift', prepareData)
+         .then((shift: any) => {
+            if (shift[0].endShift) {
+               AlertSmall('error', 'Inicie turno antes de realizar una venta')
+            } else {
+               createRefund(shift[0].idShift)
+            }
+         })
+   }
+
+   const createRefund = (idShift: any) => {
       let daten = new Date()
+      daten.setUTCHours(daten.getUTCHours() - 5)
       let qproductval = 0
       for (let i = 0; i < ordersDB.length; i++) {
          qproductval = qproductval + ordersDB[i].quantityOrder
@@ -222,8 +238,29 @@ const RefundPage = () => {
                searchProduct(ordersDB[i].nameProduct, sumStock, daten)
             }
             updateNewIdSale(scope[0].scopeIdentity)
+            registerActivity(idShift, scope[0].scopeIdentity)
             AlertSmall('success', 'Devolucion registrada correctamente.')
             history.push('/dashboard')
+         })
+   }
+
+   const registerActivity = (idshift: any, idmov: any) => {
+      let res = round2Decimals(caja - Number(change))
+      console.log(res)
+      const prepareData = {
+         Idshift: { value: idshift },
+         Iduser: { value: user.idUser },
+         Name: { value: 'Devolucion' },
+         Amount: { value: Number(change) },
+         Operator: { value: '-' },
+         Result: { value: res },
+         Idmovement: { value: idmov },
+         spName: 'spInsertActivity'
+      }
+      ipcRenderer.invoke('insertactivity', prepareData)
+         .then((msg: any) => {
+            console.log(msg + 'Actividad creada de Devolucion')
+            setCaja(res)
          })
    }
 
@@ -439,7 +476,7 @@ const RefundPage = () => {
                            <Typography variant="body2" className={classes.center}> S/. {subTotal} </Typography>
                         </Grid>
                      </Grid>
-                     <Button fullWidth variant="contained" color="primary" onClick={createRefund} style={{ marginTop: '8px' }}>Registrar Devolución</Button>
+                     <Button fullWidth variant="contained" color="primary" onClick={checkLastShift} style={{ marginTop: '8px' }}>Registrar Devolución</Button>
                   </Grid>
                </Box>
             </Grid>

@@ -104,7 +104,7 @@ const useStyles = makeStyles({
 const SalePage = () => {
    let registro: Date = new Date();
    const classes = useStyles()
-   const { user } = useContext(AuthContext)
+   const { user, caja, setCaja } = useContext(AuthContext)
 
    const [change, setChange] = useState(fillDecimals(0))
    const [cashPayment, setCashPayment] = useState(0)
@@ -346,7 +346,7 @@ const SalePage = () => {
          })
    }
 
-   const createSale = () => {
+   const createSale = ( idshift: any) => {
       let qproductval = 0
       for (let i = 0; i < saleData.length; i++) {
          qproductval += saleData[i].quantityProduct
@@ -371,7 +371,9 @@ const SalePage = () => {
       if (nameclientval === '') {
          nameclientval = 'Varios'
       }
+
       let dateval: Date = new Date();
+      dateval.setUTCHours(dateval.getUTCHours() - 5)
 
       const prepareData = {
          Iduser: { value: user.idUser },
@@ -395,8 +397,42 @@ const SalePage = () => {
                createOrder(idproduct, scope[0].scopeIdentity, quantity)
                updateStock(product, quantity)
             }
+            registerActivity(idshift, scope[0].scopeIdentity)
             clearAllInput()
             AlertSmall('success', 'Venta registrada correctamente.')
+         })
+   }
+
+   const checkLastShift = () => {
+      const prepareData = {
+         spName: 'spCheckLastShift'
+      }
+      ipcRenderer.invoke('checklastshift', prepareData)
+         .then((shift: any) => {
+            if (shift[0].endShift) {
+               AlertSmall('error', 'Inicie turno antes de realizar una venta')
+            } else {
+               createSale(shift[0].idShift)
+            }
+         })
+   }
+
+   const registerActivity = (idshift: any, idmov: any) => {
+      let res = round2Decimals(caja + Number(subTotal))
+      const prepareData = {
+         Idshift: { value: idshift },
+         Iduser: { value: user.idUser },
+         Name: { value: 'Venta' },
+         Amount: { value: subTotal },
+         Operator: { value: '+' },
+         Result: { value: res },
+         Idmovement: { value: idmov },
+         spName: 'spInsertActivity'
+      }
+      ipcRenderer.invoke('insertactivity', prepareData)
+         .then((msg: any) => {
+            console.log(msg + 'Actividad creada de Venta')
+            setCaja(res)
          })
    }
 
@@ -728,7 +764,7 @@ const SalePage = () => {
                      </Grid>
 
                      <Button fullWidth variant="contained" color="primary" onClick={changeShow} style={{ marginTop: '8px' }}>Preparar comprobante de pago</Button>
-                     <Button fullWidth variant="contained" color="primary" onClick={createSale} style={{ marginTop: '8px' }}>Registrar Venta</Button>
+                     <Button fullWidth variant="contained" color="primary" onClick={checkLastShift} style={{ marginTop: '8px' }}>Registrar Venta</Button>
                   </Grid>
                </Box>
             </Grid>

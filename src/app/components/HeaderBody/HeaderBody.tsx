@@ -39,7 +39,7 @@ const fillDecimals = (number: number) => {
 }
 
 const HeaderBody = () => {
-    const { user, setUser, caja, setCaja } = useContext(AuthContext)
+    const { user, setUser, caja } = useContext(AuthContext)
     const classes = useStyles();
     let history = useHistory()
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
