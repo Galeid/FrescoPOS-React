@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { Button, TextField, Grid, Card, CardMedia, Typography, CardContent } from '@material-ui/core'
 import { Theme, makeStyles } from '@material-ui/core/styles'
 import url from '../../../assets/Dashboard/624.jpg'
+import urlCard from '../../../assets/Dashboard/BackgroundCardWelcome.jpg'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: 'auto',
         height: 200,
-        background: 'linear-gradient(45deg, #ffcc5c 20%, #3c3c3c 20% 50%, #ff6f69 50% 80%, #96ceb4 80%)',
+        //background: 'linear-gradient(45deg, #ffcc5c 20%, #3c3c3c 20% 50%, #ff6f69 50% 80%, #96ceb4 80%)',
+        backgroundImage: `url(${urlCard})` ,
         borderRadius: 20,
         boxShadow: "3",
         display: 'flex',
@@ -123,8 +125,8 @@ function CardsHeader(props: { user: any, }) {
                                 </Typography>
                                 {props.user.idRole == 1 ?
                                     <>
-                                        <Grid container className={classes.gridCenter} >
-                                            <Grid xs={9}>
+                                        <Grid container item={true} className={classes.gridCenter} >
+                                            <Grid item xs={9}>
                                                 <TextField
                                                     variant="outlined"
                                                     value={userName}
@@ -133,12 +135,12 @@ function CardsHeader(props: { user: any, }) {
                                                     onChange={updateUserName}
                                                 />
                                             </Grid>
-                                            <Grid xs={3}>
+                                            <Grid item xs={3}>
                                                 <Button variant="contained" color="primary">Hola</Button>
                                             </Grid>
                                         </Grid>
-                                        <Grid container className={classes.gridCenter} >
-                                            <Grid xs={9}>
+                                        <Grid container item={true} className={classes.gridCenter} >
+                                            <Grid item xs={9}>
                                                 <TextField
                                                     variant="outlined"
                                                     value={userName}
@@ -147,7 +149,7 @@ function CardsHeader(props: { user: any, }) {
                                                     onChange={updateUserName}
                                                 />
                                             </Grid>
-                                            <Grid xs={3}>
+                                            <Grid item xs={3}>
                                                 <Button variant="contained" color="primary">Hola</Button>
                                             </Grid>
                                         </Grid>

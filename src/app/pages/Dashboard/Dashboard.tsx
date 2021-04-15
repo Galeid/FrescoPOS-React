@@ -27,7 +27,7 @@ import urlSupplier from '../../assets/Dashboard/BasketAndShoppingCartFilledWithP
 import urlEmployee from '../../assets/Dashboard/ManUsingFaceMaskWithSalesman.svg'
 import urlReport from '../../assets/Dashboard/AccountingWithSheetCalculatorsBookkeepingReport.svg'
 import urlSupport from '../../assets/Dashboard/EngineerManDesignWorkerProfession.svg'
-import imgBackDash from '../../assets/Dashboard/BackgroundDashboard.svg'
+//import imgBackDash from '../../assets/Dashboard/BackgroundDashboard.svg'
 
 const useStyles = makeStyles(() => ({
    root: {
@@ -180,7 +180,7 @@ const MainPage = () => {
             </Grid>
              width: '100%', height: '100%'
          */}
-         <Grid container spacing={3} justify="space-evenly" style={{backgroundImage: `url(${imgBackDash})`}} >
+         <Grid container item={true} spacing={3} justify="space-evenly" >
             <div style={{width: '90%'}}>
                <CardsWelcome user={user} />
             </div>

@@ -7,35 +7,110 @@ import AlertSmall from '../../components/Alert/AlertSmall'
 import { AuthContext } from '../../../services/AuthContext';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
+
+import { Avatar, Button, Container, TextField, Grid, Card, CardMedia, Typography, CardContent } from '@material-ui/core'
+
+import backgroundLogin from '../../assets/Login/PatternRandomized.svg'
+import img1 from '../../assets/Login/graphic1.svg'
 
 const { ipcRenderer } = window.require('electron')
 
 let userLogged: any[] = []
 
 const useStyles = makeStyles((theme) => ({
-   paper: {
+   formsContainer: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      top: 0,
+      left: 0,
+   },
+   container: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
+      position: 'relative',
+      width: '100%',
+      overflow: 'hidden',
+   },
+   paper: {
+      alignItems: 'left',
+      display: 'flex',
+      flexDirection: 'column',
+      width: 300
    },
    avatar: {
       margin: theme.spacing(1),
       backgroundColor: theme.palette.secondary.main,
-      width: '100px', //theme.spacing(7),
-      height: '100px',//theme.spacing(7),
+      width: theme.spacing(7),
+      height: theme.spacing(7),
    },
    form: {
-      width: '100%',
-      marginTop: theme.spacing(1),
+      width: 'auto',
+      height: 'auto',
+      margin: 10,
+      alignItems: 'center',
+   },
+
+   imgHolder: {
+      width: 550,
+      backgroundColor: '#FAFAFA',
+   },
+   imgHolderBg: {
+      opacity: 1,
+      backgroundImage: 'none'
+   },
+   infoHolder: {
+      paddingTop: '15%',
+      marginBottom: '15%',
+      color: '#000',
+      alignContent: 'left',
+   },
+   pageLinks: {
+      fontFamily: 'Roboto',
+      color: '#000',
+      fontWeight: 'bold',
+      marginLeft: 20
+   },
+   font: {
+      fontFamily: 'Roboto',
+      fontStyle: 'normal',
+      fontWeight:'bold',
+      fontSize: 30,
+   },
+   font2:{
+      fontFamily: 'Roboto',
+      fontStyle: 'normal',
+   },
+   font3:{
+      display: 'flex',
+      alignItems: 'center',
+      fontFamily: 'Roboto',
+      fontStyle: 'normal',
+      fontWeight:'bold',
+      fontSize: 15,
+   },
+   font4:{
+      fontFamily: 'Roboto',
+      fontStyle: 'normal',
+      marginLeft: 10,
+      fontSize: 14,
+   },
+   textField: {
+      //backgroundColor: "#f0f0f0",
+      margin: 10,
+      position: 'relative',
+      boxShadow: 'none',
    },
    submit: {
-      margin: theme.spacing(3, 0, 2),
-      padding: '10px 0px'
+      //margin: theme.spacing(3, 0, 2),
+      backgroundColor: "#0093FF",
+      fontSize: 12,
+      margin: 10,
+      padding: '10px 0px',
+      borderRadius: 10,
+      width: '30%',
+      height: 38
    },
 
 }));
@@ -60,7 +135,7 @@ const LoginPage = () => {
    const validateUser = () => {
       if (form.username.length === 0 && form.password.length === 0) AlertSmall('info', 'Formulario vacio')
       else if (form.username === '') AlertSmall('info', 'Llena el campo de usuario.')
-      else if(form.password === '') AlertSmall('info', 'Llena el campo de contraseña.')
+      else if (form.password === '') AlertSmall('info', 'Llena el campo de contraseña.')
       else {
          const prepareData = {
             Nameuser: {
@@ -76,7 +151,7 @@ const LoginPage = () => {
             .then((user: any) => {
                userLogged = user.slice()
                if (userLogged.length > 0) {
-                  setUser(userLogged[0]) 
+                  setUser(userLogged[0])
                   //console.log(userLogged[0])
                   history.push('/dashboard');
                } else {
@@ -93,74 +168,60 @@ const LoginPage = () => {
    }
 
    return (
-      <Container maxWidth="xs">
-         <div className={classes.paper}>
-            <Avatar className={classes.avatar} />
-            <Typography component="h1" variant="h3">
-               Inicio de Sesion
-            </Typography>
-            <form className={classes.form} noValidate>
-               <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Usuario"
-                  name="username"
-                  autoComplete="user"
-                  onChange={updateField}
-                  value={form.username}
-                  autoFocus
-               />
-               <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Contraseña"
-                  type="password"
-                  onChange={updateField}
-                  value={form.password}
-                  autoComplete="current-password"
-               />
-               <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  onClick={loginButton}
-               >
-                  Ingresar
-               </Button>
-            </form>
-         </div>
-      </Container>
-   )
-}
-
-/*const LoginMUI = () => {
-   return(
-      <div className="AppContent">
-         <form className="form-signin">
-            <div className="form-inner">
-            <h1 className="h3 mb-3 font-weight-normal">Inicio de Sesion</h1>
-            <img className="mb-4" src="https://img.icons8.com/bubbles/2x/login-rounded-right.png"/>
-               <div className="form-group">
-                  <label htmlFor="user">User: </label>
-                  <input type="user" className="form-control"
-                  placeholder="Username" name="username" onChange={updateField} value={form.username}></input>
+      <>
+         <Grid container className={classes.formsContainer} item={true} justify="center" direction="row" alignItems="center">
+            <div className={classes.imgHolder}>
+               <div className={classes.imgHolderBg}></div>
+               <div className={classes.infoHolder}>
+                  <img src={img1} alt="" />
                </div>
-               <div className="form-group">
-                  <label htmlFor="password">Password:</label>
-                  <input type="password" name="password" className="form-control" placeholder="Password" onChange={updateField} value={form.password}></input>
-               </div>
-               <input className="btn btn-lg btn-primary btn-block" type="submit" onClick={handleSubmit} value="LOGIN"></input>
             </div>
-         </form>
-      </div>
+            <Container className={classes.container} maxWidth="xs">
+               <div className={classes.paper}>
+                  <h3 className={classes.font}> La inspiración existe, pero te encontrará trabajando.</h3>
+                  {/*<p className={classes.font2}> Crea tu propia guía de estilo. Que sea única e identificable por los demás.</p>*/}
+                  <div>
+                     <a className={classes.pageLinks}>Login</a>
+                  </div>
+                  <form className={classes.form} noValidate>
+                     <Grid container item={true} direction="row">
+                        <TextField
+                           fullWidth
+                           label="Usuario"
+                           name="username"
+                           variant="outlined"
+                           size="small"
+                           value={form.username}
+                           onChange={updateField}
+                           className={classes.textField}
+                        />
+                        <TextField
+                           fullWidth
+                           label="Contraseña"
+                           name="password"
+                           type="password"
+                           variant="outlined"
+                           size="small"
+                           value={form.password}
+                           onChange={updateField}
+                           className={classes.textField}
+                        />
+                        <Button
+                           type="submit"
+                           variant="contained"
+                           color="primary"
+                           className={classes.submit}
+                           onClick={loginButton}
+                        >
+                           Ingresar
+                        </Button>
+                        {/*<a className={classes.font3}>No tienes cuenta?</a><a className={classes.font4}>Contacta con un Administrador</a>*/}
+                     </Grid>
+                  </form>
+               </div>
+            </Container>
+         </Grid>
+      </>
    )
 }
-*/
 export default LoginPage
