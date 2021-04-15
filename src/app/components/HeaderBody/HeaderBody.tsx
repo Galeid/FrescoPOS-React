@@ -65,7 +65,7 @@ const HeaderBody = () => {
             {
                 user ?
                     <>
-                        <Typography variant="h6" className={classes.caja}>S/ {fillDecimals(caja)}</Typography>
+                        <Typography variant="h6" className={classes.caja}>CAJA: S/ {fillDecimals(caja)}</Typography>
                         <Typography variant="h6" className={classes.name}>
                             {user.nameUser.charAt(0).toUpperCase() + user.nameUser.substring(1)}
                         </Typography>

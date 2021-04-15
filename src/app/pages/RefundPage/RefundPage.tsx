@@ -8,8 +8,6 @@ import {
    FormControlLabel, RadioGroup, Radio, FormLabel
 } from '@material-ui/core'
 import AlertSmall from '../../components/Alert/AlertSmall'
-import AlertBig from '../../components/Alert/AlertBig'
-import { Delete } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../../services/AuthContext'
 
@@ -108,6 +106,7 @@ const RefundPage = () => {
    // eslint-disable-next-line react-hooks/exhaustive-deps
    useEffect(() => {
       searchSaleId()
+   // eslint-disable-next-line
    }, [])
 
    useEffect(() => {
@@ -121,6 +120,7 @@ const RefundPage = () => {
          updateTotalIgv(sum)
          setChange(fillDecimals(round2Decimals(aux - sum)))
       }
+   // eslint-disable-next-line
    }, [ordersDB])
 
    const updateTotalIgv = (sum: any) => {
@@ -338,8 +338,9 @@ const RefundPage = () => {
                         <Grid item xs={12}>
                            <TextField 
                               placeholder="Id de la venta de devolución"
-                              value={saleDB.idSale}
+                              defaultValue={saleDB.idSale}
                               variant="outlined"
+                              disabled
                            />
                         </Grid>
                      </Grid>

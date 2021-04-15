@@ -546,7 +546,7 @@ const insertActivity = (event, args) => {
                 args.Amount.type = TYPES.Float
                 args.Operator.type = TYPES.NVarChar
                 args.Result.type = TYPES.Float
-                args.Idmovement.type = TYPES.Int
+                args.Idmovement.type = TYPES.Int || TYPES.Null
                 return updateDb(connection, args)
             })
             .then(message => resolve(message))

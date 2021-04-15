@@ -8,9 +8,8 @@ import { AuthContext } from '../../../services/AuthContext';
 import { makeStyles } from '@material-ui/core/styles';
 
 
-import { Avatar, Button, Container, TextField, Grid, Card, CardMedia, Typography, CardContent } from '@material-ui/core'
+import { Button, Container, TextField, Grid} from '@material-ui/core'
 
-import backgroundLogin from '../../assets/Login/PatternRandomized.svg'
 import img1 from '../../assets/Login/graphic1.svg'
 
 const { ipcRenderer } = window.require('electron')
@@ -181,7 +180,7 @@ const LoginPage = () => {
                   <h3 className={classes.font}> La inspiración existe, pero te encontrará trabajando.</h3>
                   {/*<p className={classes.font2}> Crea tu propia guía de estilo. Que sea única e identificable por los demás.</p>*/}
                   <div>
-                     <a className={classes.pageLinks}>Login</a>
+                     <span className={classes.pageLinks}>Login</span>
                   </div>
                   <form className={classes.form} noValidate>
                      <Grid container item={true} direction="row">

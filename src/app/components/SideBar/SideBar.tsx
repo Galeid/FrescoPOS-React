@@ -22,6 +22,7 @@ import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Category from '@material-ui/icons/Category';
 import AirportShuttle from '@material-ui/icons/AirportShuttle';
 import Assignment from '@material-ui/icons/Assignment';
+import AlertSmall from '../Alert/AlertSmall';
 
 const { ipcRenderer } = window.require('electron')
 
@@ -62,13 +63,13 @@ const SideBar = () => {
 
    const itemsList = [
       {
-         text: 'Dashboard',
+         text: 'Inicio',
          icon: <HomeIcon className={classes.itemIcon} />,
          onClick: () => history.push('/dashboard'),
          userRole: [1, 2, 3]
       },
       {
-         text: 'Ventas (Beta)',
+         text: 'Ventas',
          icon: <LocalGroceryStoreIcon className={classes.itemIcon} />,
          onClick: () => history.push('/sale'),
          userRole: [1, 2]
@@ -79,12 +80,12 @@ const SideBar = () => {
          onClick: () => history.push('/users'),
          userRole: [1]
       },
-      {
+      /* {
          text: 'Detalle de los Turnos',
          icon: <AssignmentInd className={classes.itemIcon} />,
          onClick: () => history.push('/shifts'),
          userRole: [1]
-      },
+      }, */
       {
          text: 'Categorías',
          icon: <Category className={classes.itemIcon} />,
@@ -169,7 +170,7 @@ const SideBar = () => {
       }
       ipcRenderer.invoke('createshift', prepareData)
          .then((message: any) => {
-            console.log('ALERTAAAAAAAAAAAA create')
+            AlertSmall('success', 'Se inicio el turno correctamente')
          })
    }
 
@@ -183,7 +184,7 @@ const SideBar = () => {
       }
       ipcRenderer.invoke('updateshift', prepareData)
          .then((message: any) => {
-            console.log('ALERTAAAAAAAAAAAA update')
+            AlertSmall('success', 'Se finalizó el turno correctamente')
          })
    }
 

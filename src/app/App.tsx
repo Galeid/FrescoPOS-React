@@ -95,6 +95,7 @@ const App = () => {
         } else {
             setAux(false)
         }
+    // eslint-disable-next-line
     }, [caja])
 
     const updateCash = ( cajaVal: any) => {

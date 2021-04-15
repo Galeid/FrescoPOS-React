@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Button, TextField, Grid, Card, CardMedia, Typography, CardContent } from '@material-ui/core'
 import { Theme, makeStyles } from '@material-ui/core/styles'
 import url from '../../../assets/Dashboard/624.jpg'
 import urlCard from '../../../assets/Dashboard/BackgroundCardWelcome.jpg'
+
+import AlertSmall from '../../../components/Alert/AlertSmall'
+
+import { AuthContext } from '../../../../services/AuthContext';
+
+const { ipcRenderer } = window.require('electron')
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -20,7 +26,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         textAlign: 'left',
         textTransform: 'uppercase',
         fontWeight: 'bold',
-        color: '#fff'
+        color: '#fff',
+        marginBottom: '8px'
     },
     texto1: {
         opacity: 0.9,
@@ -33,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: 12,
         color: '#fff',
         display: 'inline-block',
-        margin: '10px 0',
+        margin: '2px 0',
         textDecoration: 'none',
         paddingLeft: theme.spacing(1),
     },
@@ -69,13 +76,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     textField: {
         borderRadius: 5,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        marginRight:'8px'
     },
 }));
 
-function CardsHeader(props: { user: any, }) {
+const round2Decimals = (num: any) => {
+    return Math.round((num + Number.EPSILON) * 100) / 100
+ }
 
-    const [userName, setUserName] = useState("asdf");
+function CardsHeader(props: { user: any, }) {
+    const { user, caja, setCaja } = useContext(AuthContext)
+    const [cajaRet, setCajaRet] = useState(0)
+    const [cajaRec, setCajaRec] = useState(0)
 
     const classes = useStyles();
     var days = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
@@ -84,10 +97,67 @@ function CardsHeader(props: { user: any, }) {
     let da = new Intl.DateTimeFormat('es-ES', { day: '2-digit' }).format(d);
     var dayName = days[new Date().getDay()];
 
-    const updateUserName = (e: any) => {
-        setUserName(e.target.value);
+    const updateRetirar = (e: any) => {
+        setCajaRet(e.target.value);
     };
 
+    const updateRecargar = (e: any) => {
+        setCajaRec(e.target.value);
+    };
+
+    const recargarCaja = () => {
+        checkLastShift('recargar')
+    }
+
+    const retirarCaja = () => {
+        checkLastShift('retirar')
+    }
+
+    const checkLastShift = (val: string) => {
+        const prepareData = {
+           spName: 'spCheckLastShift'
+        }
+        ipcRenderer.invoke('checklastshift', prepareData)
+           .then((shift: any) => {
+              if (shift[0].endShift) {
+                 AlertSmall('error', 'Se tiene que iniciar turno para poder recargar/retirar la caja.')
+              } else {
+                registerActivity(shift[0].idShift, val) 
+              }
+           })
+    }
+
+    const registerActivity = (idshift: any, val: string) => {
+        let res = 0
+        let isRet = false
+        if (val === 'retirar') {
+            isRet = true
+            res = round2Decimals(caja - Number(cajaRet))
+        } else if (val === 'recargar') {
+            res = round2Decimals(caja + Number(cajaRec))
+        }
+        const prepareData = {
+           Idshift: { value: idshift },
+           Iduser: { value: user.idUser },
+           Name: { value: isRet ? 'Retiro': 'Recarga' },
+           Amount: { value: isRet ? cajaRet : cajaRec },
+           Operator: { value: isRet ? '-' : '+' },
+           Result: { value: res },
+           Idmovement: { value: null },
+           spName: 'spInsertActivity'
+        }
+        ipcRenderer.invoke('insertactivity', prepareData)
+           .then((msg: any) => {
+              console.log(msg + 'Actividad creada de Recarga/Retiro')
+              setCaja(res)
+              if (val === 'retirar') {
+                setCajaRet(0)
+              } else if (val === 'recargar') {
+                setCajaRec(0)
+              }
+           })
+    }
+    
     return (
         <>
             <Grid container item={true} xs={12} spacing={1} justify="center" direction="row" alignItems="center">
@@ -120,42 +190,53 @@ function CardsHeader(props: { user: any, }) {
                     <Card className={classes.root} >
                         <div className={classes.details}>
                             <CardContent className={classes.content}>
-                                <Typography className={classes.titulo}>
-                                    Bienvenido {props.user.nameUser}
-                                </Typography>
-                                {props.user.idRole == 1 ?
+                                {props.user.idRole === 1 ?
                                     <>
+                                        <Typography className={classes.titulo}>
+                                            Acciones de Caja
+                                        </Typography>
                                         <Grid container item={true} className={classes.gridCenter} >
-                                            <Grid item xs={9}>
+                                            <Grid item xs={7}>
                                                 <TextField
                                                     variant="outlined"
-                                                    value={userName}
+                                                    value={cajaRec}
                                                     size="small"
                                                     className={classes.textField}
-                                                    onChange={updateUserName}
+                                                    onChange={updateRecargar}
+                                                    type="number"
+                                                    InputProps={{ inputProps: { min: 0 } }}
+                                                    onFocus={event => event.target.select()}
+                                                    fullWidth
                                                 />
                                             </Grid>
-                                            <Grid item xs={3}>
-                                                <Button variant="contained" color="primary">Hola</Button>
+                                            <Grid item xs={5}>
+                                                <Button variant="contained" color="primary" fullWidth onClick={recargarCaja}>Recargar</Button>
                                             </Grid>
                                         </Grid>
                                         <Grid container item={true} className={classes.gridCenter} >
-                                            <Grid item xs={9}>
+                                            <Grid item xs={7}>
                                                 <TextField
                                                     variant="outlined"
-                                                    value={userName}
+                                                    value={cajaRet}
                                                     size="small"
                                                     className={classes.textField}
-                                                    onChange={updateUserName}
+                                                    onChange={updateRetirar}
+                                                    type="number"
+                                                    onFocus={event => event.target.select()}
+                                                    InputProps={{ inputProps: { min: 0, max: parseInt(caja) } }}
+                                                    fullWidth
                                                 />
                                             </Grid>
-                                            <Grid item xs={3}>
-                                                <Button variant="contained" color="primary">Hola</Button>
+                                            <Grid item xs={5}>
+                                                <Button variant="contained" color="primary" fullWidth onClick={retirarCaja}>Retirar</Button>
                                             </Grid>
                                         </Grid>
                                     </>
                                     :
                                     <>
+                                        <Typography className={classes.titulo}>
+                                            Datos del usuario:
+                                        </Typography>
                                         <Typography className={classes.texto3}>
                                             Correo: {props.user.emailUser}
                                         </Typography>
