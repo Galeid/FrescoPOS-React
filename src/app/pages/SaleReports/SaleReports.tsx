@@ -124,24 +124,40 @@ const SaleReports = () => {
       // eslint-disable-next-line
    }, [pdfInfo])
    
-   const setSalesTableData = (sales: any, tos: string) => {
+   const setSalesTableData = (salese: any, tos: string) => {
+      let sales = []
+      let salesSta = []
+      for (let i = 0; i < salese.length; i++) {
+         if (salese[i].stateSale) {
+            salesSta.push(salese[i])
+         }
+      }
+      if ( user.idRole === 1) {
+         sales = salese.slice()
+      } else {
+         sales = salesSta.slice()
+      }
       let newNum = 0
       let newTax = 0
       let qp = 0
       for (let i = 0; i < sales.length; i++) {
-         newNum = newNum + sales[i].subtotalSale;
-         newTax = newTax + sales[i].taxSale;
-         qp = qp + sales[i].qproductsSale;
+         if (sales[i].stateSale) {
+            newNum = newNum + sales[i].subtotalSale;
+            newTax = newTax + sales[i].taxSale;
+            qp = qp + sales[i].qproductsSale;
+         }
       }
       setRevenueSales(round2Decimals(newNum))
       setTaxSales(round2Decimals(newTax))
       setSalesDB(sales)
       // eslint-disable-next-line
+
+
       if (tos === 'all') {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
             tax: newTax,
-            sales: sales,
+            sales: salesSta,
             dateFrom: 'el inicio',
             dateTo: 'el final',
             quantityProducts: qp,
@@ -151,7 +167,7 @@ const SaleReports = () => {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
             tax: newTax,
-            sales: sales,
+            sales: salesSta,
             dateFrom: convertDateString(dateFrom),
             dateTo: convertDateString(dateTo),
             quantityProducts: qp,
@@ -161,7 +177,7 @@ const SaleReports = () => {
          setPdfInfo({ ...pdfInfo,
             revenue: newNum,
             tax: newTax,
-            sales: sales,
+            sales: salesSta,
             dateFrom: 'el inicio',
             dateTo: 'el final',
             quantityProducts: qp,
