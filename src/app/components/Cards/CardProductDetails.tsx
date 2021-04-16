@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../../services/AuthContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import AlertSmall from '../Alert/AlertSmall'
@@ -56,6 +57,12 @@ const CardProductDetails = (props: { idProduct: any; }) => {
         stateProduct: ''
     })
     const [categoryDB, setCategoryDB] = useState(categoriesFromDB)
+    const { user } = useContext(AuthContext)
+    const [edit, setEdit] = useState(false)
+
+
+    //console.log('edit2: ', edit)
+
 
     //const [stockInitial, setStockInitial] = useState(null)
     //const [productDB2, setProductDB2] = useState()
@@ -155,6 +162,9 @@ const CardProductDetails = (props: { idProduct: any; }) => {
     useEffect(() => {
         if (id !== 'null') {
             getProductsId()
+            if (user.idRole === 3) {
+                setEdit(true)
+            }
         }
         getCategories()
         // eslint-disable-next-line
@@ -178,6 +188,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                         <Grid item md={6} xs={12}>
                             <TextField
                                 fullWidth
+                                disabled={edit}
                                 label="Codigo de barras"
                                 onChange={handleChange}
                                 value={productDB.barcodeProduct || ''}
@@ -189,6 +200,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                             <TextField
                                 fullWidth
                                 required
+                                disabled={edit}
                                 label="Nombre del producto"
                                 onChange={handleChange}
                                 value={productDB.nameProduct || ''}
@@ -211,6 +223,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                             <TextField
                                 fullWidth
                                 required
+                                disabled={edit}
                                 label="Precio Venta"
                                 className={classes.textField}
                                 onChange={handleChange}
@@ -226,6 +239,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                 <TextField
                                     fullWidth
                                     required
+                                    disabled={edit}
                                     label="Precio Compra"
                                     className={classes.textField}
                                     onChange={handleChange}
@@ -246,6 +260,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                         <Select
                                             fullWidth
                                             required
+                                            disabled={edit}
                                             value={productDB.stateProduct}
                                             onChange={handleChange}
                                             input={<Input name="stateProduct" />}
@@ -275,6 +290,7 @@ const CardProductDetails = (props: { idProduct: any; }) => {
                                         <Select
                                             fullWidth
                                             required
+                                            disabled={edit}
                                             value={productDB.idCategory || ''}
                                             onChange={handleChange}
                                             input={<Input name="idCategory" />}

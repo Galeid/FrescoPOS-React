@@ -163,7 +163,7 @@ const CategoriesList = (props: { list: any; }) => {
                                 inputProps={{
                                     style: { padding: '12px 0px' }
                                 }}
-                                placeholder="Buscar productos"
+                                placeholder="Buscar categorias"
                                 variant="outlined"
                                 helperText={alert ? "" : "Ingresa un minimo de 3 letras para comenzar la busqueda"}
                                 onChange={handleChange}

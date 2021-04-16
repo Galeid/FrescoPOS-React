@@ -139,7 +139,6 @@ const MainPage = () => {
          color: '2A265F',
          onClick: () => {
             history.push('/users')
-            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1]
       },
@@ -151,7 +150,6 @@ const MainPage = () => {
          color: '2A265F',
          onClick: () => {
             history.push('/saleReports')
-            AlertSmall('info', 'En construccion, no disponible por el momento')
          },
          userRole: [1, 2]
       },
@@ -162,7 +160,7 @@ const MainPage = () => {
          url: urlSupport,
          color: '2A265F',
          onClick: () => {
-            AlertSmall('info', 'Llame a Brucce al: 999 999 999')
+            AlertSmall('info', 'Contacte con un administrador para solicitar el soporte tecnico.')
          },
          userRole: [1, 2, 3]
       }
