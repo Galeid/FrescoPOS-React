@@ -259,7 +259,7 @@ const ProductList = () => {
                                         </TableCell>
                                         {
                                             (user != null) ?
-                                                (user.idRole === 1) ?
+                                                (user.idRole === 1 || user.idRole === 3 ) ?
                                                     <TableCell align="center">
                                                         <Grid container spacing={2}>
                                                             <Grid
@@ -279,6 +279,7 @@ const ProductList = () => {
                                                                     }}
                                                                 />
                                                             </Grid>
+                                                            {(user.idRole === 1) ?
                                                             <Grid
                                                                 item
                                                                 xs={6} //12
@@ -294,6 +295,9 @@ const ProductList = () => {
                                                                     startIcon={<Delete />}
                                                                 />
                                                             </Grid>
+                                                            :
+                                                            false
+                                                            }
                                                         </Grid>
                                                     </TableCell>
                                                     :

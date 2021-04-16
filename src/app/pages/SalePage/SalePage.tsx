@@ -490,8 +490,8 @@ const SalePage = () => {
                   Av. Amauta 1020 Urb. Pedro P.Diaz<br />
                   Ca. Nicolas de Pierola <br />
                   Arequipa - Arequipa - Paucarpata<br />
-                  TEL: 764 826 963 <br />
-                  RUC: 10294496098 <br />
+                  TEL: 972 540 726 <br />
+                  RUC: 10439852505 <br />
                   {saleVoucher.charAt(0).toUpperCase() + saleVoucher.slice(1)} de Venta Electronica
                </div>
                <br />
