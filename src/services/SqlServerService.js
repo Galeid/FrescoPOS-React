@@ -467,6 +467,7 @@ const createShift = (event, args) => {
                 args.Startshift.type = TYPES.DateTime
                 args.Endshift.type = TYPES.DateTime
                 args.Iduser.type = TYPES.Int
+                args.StartAmount.type = TYPES.Float
                 return updateDb(connection, args)
             })
             .then(sales => resolve(sales))
@@ -493,6 +494,7 @@ const updateShift = (event, args) => {
                 args.Endshift.type = TYPES.DateTime || TYPES.Null
                 args.Iduser.type = TYPES.Int
                 args.Idshift.type = TYPES.Int
+                args.EndAmount.type = TYPES.Float
                 return updateDb(connection, args)
             })
             .then(sales => resolve(sales))
@@ -566,6 +568,19 @@ const searchActivities = (event, args) => {
     })
 }
 
+const searchshift = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                args.Datefrom.type = TYPES.Date
+                args.Dateto.type = TYPES.Date
+                return readDB(connection, args)
+            })
+            .then(sales => resolve(sales))
+            .catch(err => reject(err))
+        })
+}
+
 ipcMain.handle('getproducts', getProducts)
 ipcMain.handle('validateuser', validateUser)
 ipcMain.handle('searchproducts', searchProducts)
@@ -601,3 +616,4 @@ ipcMain.handle('getcash', getCash)
 ipcMain.handle('insertactivity', insertActivity)
 
 ipcMain.handle('searchactivities', searchActivities)
+ipcMain.handle('searchshift', searchshift)

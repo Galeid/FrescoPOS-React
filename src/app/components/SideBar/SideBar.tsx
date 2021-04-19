@@ -56,7 +56,7 @@ const useStyles = makeStyles({
 });
 
 const SideBar = () => {
-   const { user } = useContext(AuthContext)
+   const { user, caja } = useContext(AuthContext)
    let history = useHistory();
    const classes = useStyles();
    const [inShift, setInShift] = useState(false)
@@ -80,12 +80,12 @@ const SideBar = () => {
          onClick: () => history.push('/users'),
          userRole: [1]
       },
-      /* {
+      {
          text: 'Detalle de los Turnos',
          icon: <AssignmentInd className={classes.itemIcon} />,
          onClick: () => history.push('/shifts'),
          userRole: [1]
-      }, */
+      },
       {
          text: 'Categorías',
          icon: <Category className={classes.itemIcon} />,
@@ -149,6 +149,7 @@ const SideBar = () => {
                   //caso si no se finalizó el ultimo turno
                   let inicio = shifts[0].startShift
                   let fin = new Date()
+                  fin.setUTCHours(fin.getUTCHours() - 5)
                   let idu = shifts[0].idUser
                   let id = shifts[0].idShift
                   updateShift(inicio, fin, id, idu)
@@ -168,10 +169,12 @@ const SideBar = () => {
 
    const createShift = () => {
       let fecha = new Date()
+      fecha.setUTCHours(fecha.getUTCHours() - 5)
       const prepareData = {
          Startshift: { value: fecha },
          Endshift: { value: null },
          Iduser: { value: user.idUser },
+         StartAmount: { value: caja},
          spName: 'spCreateShift'
       }
       ipcRenderer.invoke('createshift', prepareData)
@@ -186,6 +189,7 @@ const SideBar = () => {
          Endshift: { value: finSh },
          Iduser: { value: idUs },
          Idshift: { value: idSh },
+         EndAmount: { value: caja},
          spName: 'spUpdateShift'
       }
       ipcRenderer.invoke('updateshift', prepareData)
