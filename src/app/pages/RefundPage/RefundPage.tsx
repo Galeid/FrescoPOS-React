@@ -238,13 +238,13 @@ const RefundPage = () => {
                searchProduct(ordersDB[i].nameProduct, sumStock, daten)
             }
             updateNewIdSale(scope[0].scopeIdentity)
-            registerActivity(idShift, scope[0].scopeIdentity)
+            registerActivity(idShift, scope[0].scopeIdentity, daten)
             AlertSmall('success', 'Devolucion registrada correctamente.')
             history.push('/dashboard')
          })
    }
 
-   const registerActivity = (idshift: any, idmov: any) => {
+   const registerActivity = (idshift: any, idmov: any, daten: Date) => {
       let res = round2Decimals(caja - Number(change))
       console.log(res)
       const prepareData = {
@@ -255,6 +255,7 @@ const RefundPage = () => {
          Operator: { value: '-' },
          Result: { value: res },
          Idmovement: { value: idmov },
+         Date: { value: daten },
          spName: 'spInsertActivity'
       }
       ipcRenderer.invoke('insertactivity', prepareData)

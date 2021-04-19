@@ -397,7 +397,7 @@ const SalePage = () => {
                createOrder(idproduct, scope[0].scopeIdentity, quantity)
                updateStock(product, quantity)
             }
-            registerActivity(idshift, scope[0].scopeIdentity)
+            registerActivity(idshift, scope[0].scopeIdentity, dateval)
             clearAllInput()
             AlertSmall('success', 'Venta registrada correctamente.')
          })
@@ -417,7 +417,7 @@ const SalePage = () => {
          })
    }
 
-   const registerActivity = (idshift: any, idmov: any) => {
+   const registerActivity = (idshift: any, idmov: any, dateval: Date) => {
       let res = round2Decimals(caja + Number(subTotal))
       const prepareData = {
          Idshift: { value: idshift },
@@ -427,6 +427,7 @@ const SalePage = () => {
          Operator: { value: '+' },
          Result: { value: res },
          Idmovement: { value: idmov },
+         Date: { value: dateval },
          spName: 'spInsertActivity'
       }
       ipcRenderer.invoke('insertactivity', prepareData)

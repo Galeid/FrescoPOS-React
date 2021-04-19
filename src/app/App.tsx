@@ -22,6 +22,7 @@ import { AuthContext } from '../services/AuthContext';
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import ShiftsList from './pages/ShiftsList/ShiftsList';
 import RefundPage from './pages/RefundPage/RefundPage';
+import CashPage from './pages/CashPage/CashPage';
 const { ipcRenderer } = window.require('electron')
 
 const useStyles = makeStyles((theme) => ({
@@ -85,7 +86,6 @@ const App = () => {
     const [aux, setAux] = useState(true)
 
     useEffect(() => {
-        console.log('c')
         getCash()
     }, [])
 
@@ -104,19 +104,14 @@ const App = () => {
             spName: 'spUpdateCash'
         }
         ipcRenderer.invoke('updatecash', prepareData)
-            .then((message:any) => {
-                console.log(message)
-            })
     }
 
     const getCash = () => {
-        console.log('a2')
         const prepareData = {
             spName: 'spGetCash'
         }
         ipcRenderer.invoke('getcash', prepareData)
             .then((cash:any) => {
-                console.log(cash)
                 setCaja(Number(cash[0].valueVariable))/////
             })
     }
@@ -151,6 +146,7 @@ const App = () => {
                                 <Route path="/shifts" component={ShiftsList}/>
                                 <Route path="/refund/:idSale" component={RefundPage}/>
                                 <Route path="/dashboard" component={MainPage} />
+                                <Route path="/cashmoves/:idShift" component={CashPage} />
                                 <Route path="/" exact={true} component={LoginPage} />
                             </Switch>
                         </div>

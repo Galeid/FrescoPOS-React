@@ -547,9 +547,21 @@ const insertActivity = (event, args) => {
                 args.Operator.type = TYPES.NVarChar
                 args.Result.type = TYPES.Float
                 args.Idmovement.type = TYPES.Int || TYPES.Null
+                args.Date.type = TYPES.Date
                 return updateDb(connection, args)
             })
             .then(message => resolve(message))
+            .catch(err => reject(err))
+    })
+}
+
+const searchActivities = (event, args) => {
+    return new Promise((resolve, reject) => {
+        connectToServer()
+            .then(connection => {
+                return readDB(connection, args)
+            })
+            .then(act => resolve(act))
             .catch(err => reject(err))
     })
 }
@@ -584,7 +596,8 @@ ipcMain.handle('createshift', createShift)
 ipcMain.handle('listshifts', listShifts)
 ipcMain.handle('updateshift', updateShift)
 ipcMain.handle('updatenewidsale', updateNewIdSale)
-
 ipcMain.handle('updatecash', updateCash)
 ipcMain.handle('getcash', getCash)
 ipcMain.handle('insertactivity', insertActivity)
+
+ipcMain.handle('searchactivities', searchActivities)

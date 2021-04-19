@@ -128,6 +128,8 @@ function CardsHeader(props: { user: any, }) {
     }
 
     const registerActivity = (idshift: any, val: string) => {
+        let dateval: Date = new Date();
+        dateval.setUTCHours(dateval.getUTCHours() - 5)
         let res = 0
         let isRet = false
         if (val === 'retirar') {
@@ -144,6 +146,7 @@ function CardsHeader(props: { user: any, }) {
            Operator: { value: isRet ? '-' : '+' },
            Result: { value: res },
            Idmovement: { value: null },
+           Date: { value: dateval },
            spName: 'spInsertActivity'
         }
         ipcRenderer.invoke('insertactivity', prepareData)

@@ -103,6 +103,12 @@ const SideBar = () => {
          icon: <Assignment className={classes.itemIcon} />,
          onClick: () => history.push('/saleReports'),
          userRole: [1, 2]
+      },
+      {
+         text: 'Cambios de Caja',
+         icon: <Assignment className={classes.itemIcon} />,
+         onClick: () => history.push(`/cashmoves/${null}`),
+         userRole: [1]
       }
    ];
 
