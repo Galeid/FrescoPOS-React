@@ -120,8 +120,8 @@ const LoginPage = () => {
    let history = useHistory();
 
    const [form, setForm] = useState({
-      username: 'admin',
-      password: 'admin'
+      username: '',
+      password: ''
    });
 
    const updateField = (event: { target: { name: any; value: any; }; }) => {

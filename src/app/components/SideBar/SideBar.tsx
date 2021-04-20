@@ -23,6 +23,8 @@ import Category from '@material-ui/icons/Category';
 import AirportShuttle from '@material-ui/icons/AirportShuttle';
 import Assignment from '@material-ui/icons/Assignment';
 import AlertSmall from '../Alert/AlertSmall';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import ComputerIcon from '@material-ui/icons/Computer';
 
 const { ipcRenderer } = window.require('electron')
 
@@ -76,12 +78,12 @@ const SideBar = () => {
       },
       {
          text: 'Usuarios',
-         icon: <AssignmentInd className={classes.itemIcon} />,
+         icon: <PeopleAltIcon className={classes.itemIcon} />,
          onClick: () => history.push('/users'),
          userRole: [1]
       },
       {
-         text: 'Detalle de los Turnos',
+         text: 'Detalles de Turnos',
          icon: <AssignmentInd className={classes.itemIcon} />,
          onClick: () => history.push('/shifts'),
          userRole: [1]
@@ -106,7 +108,7 @@ const SideBar = () => {
       },
       {
          text: 'Cambios de Caja',
-         icon: <Assignment className={classes.itemIcon} />,
+         icon: <ComputerIcon className={classes.itemIcon} />,
          onClick: () => history.push(`/cashmoves/${null}`),
          userRole: [1]
       }

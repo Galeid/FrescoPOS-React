@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom'
 import {
    Chip, Card, CardContent, Table, TableBody, 
    TableCell, TableContainer, TableHead, TableRow, FormControl,
-   InputLabel, Select, MenuItem, Typography, Grid
+   InputLabel, Select, MenuItem, Typography, Grid,
+   TablePagination
 } from '@material-ui/core'
 
 const { ipcRenderer } = window.require('electron')
@@ -42,6 +43,9 @@ const CashPage = () => {
    const [show, setShow] = useState(false)
    const [activityInfo, setActivityInfo] = useState(cashActivity)
    const [selectAction, setSelectAction] = useState('')
+   const [page, setPage] = useState(0);
+   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
    const { idShift } = useParams<{ idShift: string }>();
    //spSearchActivities searchactivities
 
@@ -76,6 +80,15 @@ const CashPage = () => {
       }
       return (<Chip color={colorS as "primary" | "secondary" | "default" | undefined} label={action} size="small" />)
    }
+
+   const handleChangePage = (e: any, newPage: number) => {
+      setPage(newPage);
+   }
+
+   const handleChangeRowsPerPage = (e: any) => {
+      setRowsPerPage(parseInt(e.target.value, 10));
+      setPage(0);
+   }
    
    const searchActivities = () => {
       const prepareData = {
@@ -108,7 +121,7 @@ const CashPage = () => {
          <CardContent>
             <Grid container spacing={2}>
                <Grid item xs={9}>
-                  <Typography variant="h5" component="h2">Cambios de Caja</Typography>
+                  <Typography variant="h5" style={{marginTop: '16px'}}>Cambios de Caja</Typography>
                </Grid>
                <Grid item xs={3}>
                   <FormControl style={{minWidth: '200px'}}>
@@ -145,7 +158,7 @@ const CashPage = () => {
                      </TableRow>
                   </TableHead>
                   <TableBody>
-                     {activityInfo.map((a, index) => {
+                     {activityInfo.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((a, index) => {
                         if (selectAction === '') {
                            return (<TableRow key={index}>
                               <TableCell align="center">{a.idActivity}</TableCell>
@@ -173,6 +186,17 @@ const CashPage = () => {
                   </TableBody>
                </Table>
             </TableContainer>
+            <TablePagination
+               rowsPerPageOptions={[10, 25]}
+               component="div"
+               count={activityInfo.length}
+               //count={productDB.length === -1 ? 1 * 10 + 1 : productDB.length}
+               rowsPerPage={rowsPerPage}
+               page={page}
+               //page={( page > 0 && productDB.length === rowsPerPage ) ? 0 : page}
+               onChangePage={handleChangePage}
+               onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
          </CardContent>
       </Card>
       </>
