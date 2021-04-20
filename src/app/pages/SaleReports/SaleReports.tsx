@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
       flexDirection: "row"
    },
    firstTableColHeaderStyle: {
-      width: "26.78px",
+      width: "58.58px", //26.78px
       borderStyle: "solid",
       borderColor: "#000",
       borderBottomColor: "#000",
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
       backgroundColor: "#bdbdbd"
    },
    tableColHeaderStyle: {
-      width: "56.58px",
+      width: "58.58px",
       borderStyle: "solid",
       borderColor: "#000",
       borderBottomColor: "#000",
@@ -482,14 +482,14 @@ const styles = StyleSheet.create({
       backgroundColor: "#bdbdbd"
    },
    firstTableColStyle: {
-      width: "26.78px",
+      width: "58.58px", //26.78px
       borderStyle: "solid",
       borderColor: "#000",
       borderWidth: 1,
       borderTopWidth: 0
    },
    tableColStyle: {
-      width: "56.58px",
+      width: "58.58px",
       borderStyle: "solid",
       borderColor: "#000",
       borderWidth: 1,
@@ -579,10 +579,6 @@ const createTableHeader = () => {
          </View>
 
          <View style={styles.tableColHeaderStyle}>
-            <Text style={styles.tableCellHeaderStyle}>Desc.</Text>
-         </View>
-
-         <View style={styles.tableColHeaderStyle}>
             <Text style={styles.tableCellHeaderStyle}>Fecha</Text>
          </View>
 
@@ -623,10 +619,6 @@ const createTableRow = (s: any, index: number ) => {
 
          <View style={styles.tableColStyle}>
             <Text style={styles.tableCellStyle}>{s.taxSale}</Text>
-         </View>
-
-         <View style={styles.tableColStyle}>
-            <Text style={styles.tableCellStyle}>{s.discountSale}</Text>
          </View>
 
          <View style={styles.tableColStyle}>

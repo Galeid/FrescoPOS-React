@@ -182,7 +182,7 @@ const ShiftsList = () => {
                         </Table>
                      </TableContainer>
                      <TablePagination
-                        rowsPerPageOptions={[5, 10, 25, shiftDB.length]}
+                        rowsPerPageOptions={[5, 10, 25]}
                         component="div"
                         count={shiftDB.length}
                         //count={productDB.length === -1 ? 1 * 10 + 1 : productDB.length}
